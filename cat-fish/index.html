@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>猫咪抓鱼</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- 顶部悬浮 HUD (防误触设计) -->
+    <header class="hud-top">
+      <div class="hud-pill">
+        <span>🐾 捕获</span>
+        <span class="score-num" id="hud-score">0</span>
+      </div>
+
+      <div class="hud-actions">
+        <button type="button" class="hud-btn" id="btn-sound" aria-label="声音切换">🔔</button>
+        <button type="button" class="hud-btn" id="btn-report" aria-label="战报海报">🏆</button>
+        <button type="button" class="hud-btn" id="btn-settings" aria-label="游戏设置">⚙️</button>
+      </div>
+    </header>
+
+    <!-- 底部猎物快速切换栏 -->
+    <nav class="hud-bottom">
+      <button type="button" class="mode-tab active" data-mode="fish">
+        <span>🐠</span>小丑鱼
+      </button>
+      <button type="button" class="mode-tab" data-mode="bird">
+        <span>🐥</span>小黄鸡
+      </button>
+      <button type="button" class="mode-tab" data-mode="mouse">
+        <span>🐹</span>仓鼠
+      </button>
+    </nav>
+  </div>
+
+  <!-- 设置弹窗 -->
+  <div class="modal-overlay" id="modal-settings" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">🐱 游戏设置</h2>
+        <button type="button" class="modal-close" id="btn-close-settings">✕</button>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label" for="inp-cat-name">猫主子昵称</label>
+        <input type="text" class="inp-text" id="inp-cat-name" maxlength="10" placeholder="例如：咪咪" />
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label">猫爪花色</label>
+        <div class="seg-row" id="seg-skin">
+          <button type="button" class="seg-btn active" data-v="white">白手套</button>
+          <button type="button" class="seg-btn" data-v="orange">橘猫</button>
+          <button type="button" class="seg-btn" data-v="black">黑猫</button>
+          <button type="button" class="seg-btn" data-v="calico">三花</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label">移动速度</label>
+        <div class="seg-row" id="seg-speed">
+          <button type="button" class="seg-btn" data-v="0.7">悠闲</button>
+          <button type="button" class="seg-btn active" data-v="1">适中</button>
+          <button type="button" class="seg-btn" data-v="1.4">敏捷</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label">屏幕数量</label>
+        <div class="seg-row" id="seg-count">
+          <button type="button" class="seg-btn" data-v="3">3 只</button>
+          <button type="button" class="seg-btn active" data-v="6">6 只</button>
+          <button type="button" class="seg-btn" data-v="9">9 只</button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary" id="btn-save-settings">保存设置</button>
+      <button type="button" class="btn-secondary" id="btn-reset-score">重置本次捕获数</button>
+    </div>
+  </div>
+
+  <!-- 战报海报弹窗 -->
+  <div class="modal-overlay" id="modal-report" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">🏆 猫咪战报海报</h2>
+        <button type="button" class="modal-close" id="btn-close-report">✕</button>
+      </div>
+
+      <div class="poster-preview-wrap">
+        <img id="poster-img" alt="战报海报预览" />
+      </div>
+
+      <button type="button" class="btn-primary" id="btn-save-album">保存战报海报 💾</button>
+      <div style="font-size: 12px; color: #888; text-align: center; margin-top: 8px;">手机端如未自动下载，长按上方海报即可存入相册</div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- 隐藏的海报生成 Canvas (3:4 竖屏标准比例) -->
+  <canvas id="share-canvas" width="1080" height="1440" style="display: none;"></canvas>
+
+  <!-- 经典脚本外链（按依赖顺序加载） -->
+  <script src="./audio.js"></script>
+  <script src="./game.js"></script>
+  <script src="./share.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Mini Apps - 个人轻量工具与灵感玩具箱</title>
+  <meta name="description" content="纯前端、开箱即用的轻量 Web 工具与趣味小游戏集合" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(99, 102, 241, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.12) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 60px 24px 40px;
+      flex: 1;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #c7d2fe;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 9999px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .app-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .app-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+      opacity: 0;
+      transition: opacity 0.28s ease;
+    }
+
+    .app-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--card-hover-border);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.45);
+    }
+
+    .app-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      font-size: 2.8rem;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-arrow {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .app-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: #a855f7;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 0.88rem;
+      color: #64748b;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    footer a {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Open Source Collection</div>
+      <h1>Web Mini Apps</h1>
+      <p class="subtitle">轻量、纯静态、开箱即用的前端小工具与趣味互动合集，无服务端依赖，随时随地体验。</p>
+    </header>
+
+    <main class="apps-grid">
+      <!-- 猫咪抓鱼 -->
+      <a href="./cat-fish/" class="app-card">
+        <div class="card-icon">🐾</div>
+        <div class="card-title">
+          <span>猫咪抓鱼</span>
+          <span class="card-arrow">→</span>
+        </div>
+        <p class="card-desc">
+          专为猫咪和摸鱼打造的触控互动游戏。支持抓小丑鱼、小黄鸡、小仓鼠等多种猎物模式，自带逼真音效、多种猫爪花色与一键战报海报生成。
+        </p>
+        <div class="tags">
+          <span class="tag">HTML5 Canvas</span>
+          <span class="tag">触控互动</span>
+          <span class="tag">解压游戏</span>
+        </div>
+      </a>
+
+      <!-- 塔罗日记 -->
+      <a href="./tarot-diary/" class="app-card">
+        <div class="card-icon">🔮</div>
+        <div class="card-title">
+          <span>今日塔罗</span>
+          <span class="card-arrow">→</span>
+        </div>
+        <p class="card-desc">
+          每日大阿卡纳牌意沉浸式翻牌与直觉记录。包含原创深度牌意解读、正逆位启示与心理学投射分析，一键生成专属抽牌卡片。
+        </p>
+        <div class="tags">
+          <span class="tag">塔罗牌</span>
+          <span class="tag">灵感直觉</span>
+          <span class="tag">卡片生成</span>
+        </div>
+      </a>
+
+      <!-- 封面排版 -->
+      <a href="./cover-styler/" class="app-card">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">
+          <span>3:4 竖屏图文排版</span>
+          <span class="card-arrow">→</span>
+        </div>
+        <p class="card-desc">
+          专为手机 3:4 竖屏打造的批量图文封面排版生成工具。支持多图批量导入、局部彩色文字标记、自定义阴影描边与模板方案快速保存。
+        </p>
+        <div class="tags">
+          <span class="tag">图片排版</span>
+          <span class="tag">批量生成</span>
+          <span class="tag">3:4 竖屏</span>
+        </div>
+      </a>
+    </main>
+  </div>
+
+  <footer>
+    <p>Released under the <a href="./LICENSE">MIT License</a> · Built with Pure HTML/CSS/JS</p>
+  </footer>
+</body>
+</html>
