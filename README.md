@@ -3,29 +3,30 @@
 轻量、纯静态、开箱即用的前端小工具与趣味互动 Web 应用合集。  
 零服务端依赖，无需配置复杂构建环境，双击 HTML 或托管在静态托管（如 GitHub Pages / Vercel / Cloudflare Pages）即可运行。
 
-> 🔗 **在线体验地址**：[https://selfr7.github.io/mini-apps/](https://selfr7.github.io/mini-apps/)
+- 🌐 **GitHub Pages 在线体验**：[https://selfr7.github.io/mini-apps/](https://selfr7.github.io/mini-apps/)
+- 🏠 **selfr.work 官方直达**：[https://selfr.work](https://selfr.work)
 
 ---
 
-## 🗂 收录工具列表
+## 🗂 收录工具列表与在线体验
 
-| 工具名称 | 目录 | 类型 | 简要说明 |
-| :--- | :--- | :--- | :--- |
-| **🐾 猫咪抓鱼** | [`cat-fish/`](./cat-fish/) | 互动游戏 | 专为猫咪（与摸鱼人）打造的触屏互动游戏，支持小鱼/小鸡/仓鼠多种模式与战报海报生成。 |
-| **🔮 今日塔罗** | [`tarot-diary/`](./tarot-diary/) | 灵感生活 | 每日大阿卡纳沉浸式翻牌与直觉记录，包含深度原创牌意、正逆位解析与抽牌卡片导出。 |
-| **🎨 3:4 竖屏图文排版** | [`cover-styler/`](./cover-styler/) | 效率工具 | 专为手机竖屏（3:4）设计的批量图文排版工具，支持多样式富文本标注、阴影模板与多图一键导出。 |
+| 工具名称 | 源码目录 | 类型 | GitHub Pages 直达 | selfr.work 官方直达 |
+| :--- | :--- | :--- | :--- | :--- |
+| **🐾 猫咪抓鱼** | [`catch-fish/`](./catch-fish/) | 互动游戏 | [在线体验](https://selfr7.github.io/mini-apps/catch-fish/) | [selfr.work/tools/catch-fish/](https://selfr.work/tools/catch-fish/) |
+| **🔮 今日塔罗** | [`tarot/`](./tarot/) | 灵感生活 | [在线体验](https://selfr7.github.io/mini-apps/tarot/) | [selfr.work/tools/tarot/](https://selfr.work/tools/tarot/) |
+| **🎨 3:4 竖屏图文排版** | [`cover-styler/`](./cover-styler/) | 效率工具 | [在线体验](https://selfr7.github.io/mini-apps/cover-styler/) | [selfr.work/tools/cover-styler/](https://selfr.work/tools/cover-styler/) |
 
 ---
 
 ## ✨ 工具特性详情
 
-### 1. 🐾 猫咪抓鱼 (`/cat-fish/`)
+### 1. 🐾 猫咪抓鱼 (`/catch-fish/`)
 - **多模式切换**：支持小丑鱼 🐠、小黄鸡 🐥、小仓鼠 🐹 三种动态猎物。
 - **自定义设置**：支持自定义猫主子昵称、猫爪花色（白手套、橘猫、黑猫、三花）、游动速度与数量。
-- **音效与触控**：内置扑腾声、抓捕音效与真实小肉垫视觉反馈，防误触 HUD 设计。
-- **战报海报生成**：一键生成 3:4 比例精致战绩海报，评定捕猎段位并可直接保存到相册。
+- **音效与触控**：内置抓捕音效与真实小肉垫视觉反馈，防误触 HUD 设计。
+- **战报海报生成**：一键生成 3:4 比例精致战绩海报，评定捕猎段位并可直接保存到相册或本地下载。
 
-### 2. 🔮 今日塔罗 (`/tarot-diary/`)
+### 2. 🔮 今日塔罗 (`/tarot/`)
 - **沉浸式抽牌体验**：洗牌、切牌、翻牌完整动效交互。
 - **大阿卡纳牌意体系**：内置 22 张经典大阿卡纳卡面与原创深度解析（正逆位启示、象征要素与初学者心理学视角）。
 - **直觉笔记**：支持抽牌后记录当下感受与联想。
@@ -33,6 +34,7 @@
 
 ### 3. 🎨 3:4 竖屏图文排版 (`/cover-styler/`)
 - **标准 3:4 竖屏比例**：专为移动端卡片与封面图设计。
+- **免费商用精品字体**：内置落霞文楷、得意黑、阿里妈妈数黑体等中文字体 CDN。
 - **灵活样式标记**：支持通过 `*重点词*` 等语法快速高亮关键字，支持主副标题字号、字距、描边与阴影微调。
 - **多图批量处理**：支持一次性拖入多张背景图片批量排版预览并打包导出。
 - **模板导入导出**：支持将排版参数保存为 JSON 模板文件，方便复用。
