@@ -1,7 +1,9 @@
-# Web Mini Apps 🪄
+# Mini Apps 🪄
 
 轻量、纯静态、开箱即用的前端小工具与趣味互动 Web 应用合集。  
 零服务端依赖，无需配置复杂构建环境，双击 HTML 或托管在静态托管（如 GitHub Pages / Vercel / Cloudflare Pages）即可运行。
+
+> 🔗 **在线体验地址**：[https://selfr7.github.io/mini-apps/](https://selfr7.github.io/mini-apps/)
 
 ---
 
@@ -59,7 +61,7 @@
 1. 将仓库 Push 到 GitHub；
 2. 进入仓库 **Settings** -> **Pages**；
 3. **Branch** 选择 `main` 分支，目录选择 `/ (root)`，点击 **Save**；
-4. 等待 1~2 分钟，即可通过 `https://<你的GitHub用户名>.github.io/web-miniapps/` 在线体验全部工具。
+4. 等待 1~2 分钟，即可通过 `https://selfr7.github.io/mini-apps/` 在线体验全部工具。
 
 ---
 
