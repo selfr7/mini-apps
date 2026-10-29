@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>3:4 竖屏图片图文排版工具</title>
   
   <!-- 免费商用精品中文字体 CDN -->
@@ -191,7 +191,7 @@
       transition: border-color 0.2s;
     }
     input[type="text"]:focus, textarea:focus, select:focus {
-      border-color: var(--primary);
+      border-color: #a7f3d0;
     }
     textarea {
       resize: vertical;
@@ -206,7 +206,7 @@
     }
     input[type="range"] {
       width: 100%;
-      accent-color: var(--primary);
+      accent-color: #a7f3d0;
       cursor: pointer;
     }
     .color-picker-wrap {
@@ -298,7 +298,7 @@
       white-space: nowrap;
     }
     .export-meta-option input {
-      accent-color: var(--primary);
+      accent-color: #a7f3d0;
     }
 
     /* 缩放裁切卡片区 */
@@ -420,7 +420,7 @@
       margin-bottom: 12px;
     }
     .image-dropzone:hover, .image-dropzone.dragover {
-      border-color: var(--primary);
+      border-color: #a7f3d0;
       background: rgba(0, 94, 47, 0.1);
     }
     .drop-hint {
@@ -448,7 +448,7 @@
       transition: all 0.2s;
     }
     .image-item-card.active {
-      border-color: var(--primary);
+      border-color: #a7f3d0;
       background: rgba(0, 94, 47, 0.15);
     }
     .img-thumb {
@@ -517,14 +517,98 @@
       transition: .2s;
       border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--primary); border-color: var(--primary); }
+    input:checked + .slider { background-color: #a7f3d0; border-color: #a7f3d0; }
     input:checked + .slider:before { transform: translateX(16px); }
+
+    .main-workspace, .center-preview, .form-col { min-width: 0; min-height: 0; }
+    .left-panel, .right-panel { flex-shrink: 0; width: clamp(280px, 25vw, 370px); }
+    .canvas-container { flex-shrink: 0; width: min(100%, calc((100dvh - 160px) * 3 / 4)); aspect-ratio: 3 / 4; }
+    #preview-canvas { width: 100%; height: auto; max-width: 100%; max-height: none; }
+    .preview-help { flex-wrap: wrap; justify-content: center; text-align: center; }
+    .mobile-panels { display: none; }
+    :focus-visible { outline: 2px solid #a7f3d0; outline-offset: 3px; }
+    input, textarea { user-select: text; caret-color: #a7f3d0; }
+    .modal-card { max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+    .canvas-container, .avatar-crop-viewport { touch-action: none; }
+    @media (max-width: 1100px) {
+      body { height: auto; min-height: 100dvh; overflow: auto; }
+      header { height: auto; min-height: 56px; padding: 12px; gap: 12px; flex-wrap: wrap; }
+      .header-actions { flex-wrap: wrap; gap: 8px; width: 100%; }
+      .header-actions > .btn { flex: 1 1 auto; min-height: 44px; white-space: nowrap; }
+      .main-workspace { flex-direction: column; overflow: visible; }
+      .center-preview { order: -2; flex: none; padding: 16px 12px; overflow: visible; }
+      .canvas-container { width: min(100%, calc(56svh * 3 / 4)); }
+      .preview-help { gap: 6px 12px !important; line-height: 1.6; }
+      .desktop-gesture { display: none; }
+      .mobile-panels { order: -1; display: flex; gap: 8px; padding: 10px 12px; background: var(--panel-bg); border-bottom: 1px solid var(--border); }
+      .mobile-panels button { flex: 1; min-height: 44px; }
+      .mobile-panels button[aria-selected="true"] { background: var(--primary); color: white; }
+      .left-panel, .right-panel { width: 100%; overflow: visible; border: 0; }
+      .left-panel { display: none; }
+      body[data-mobile-panel="style"] .left-panel { display: flex; }
+      body[data-mobile-panel="style"] .right-panel { display: none; }
+      .btn, .layer-tab-btn, select, input[type="text"] { min-height: 44px; }
+      input[type="text"], textarea, select { font-size: 16px; }
+      input[type="range"] { min-height: 32px; }
+      .panel-section { padding: 16px 12px; }
+      .crop-box .panel-title { flex-wrap: wrap; gap: 10px; }
+      .right-panel { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    }
+
+    /* 窄屏编辑器：预览常驻，仅滚动当前设置面板。 */
+    @media (max-width: 1100px) {
+      body { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+      header { flex-shrink: 0; }
+      .main-workspace { flex: 1; min-height: 0; overflow: hidden; }
+      .center-preview { flex-shrink: 0; padding: 10px 12px; }
+      .canvas-container { width: min(100%, calc(38dvh * 3 / 4)); }
+      .preview-help { margin-top: 6px !important; }
+      .mobile-panels { flex-shrink: 0; padding: 6px 12px; }
+      .left-panel, .right-panel { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; }
+      .panel-section { flex-shrink: 0; }
+    }
+    @media (max-width: 1100px) and (orientation: landscape) and (max-height: 600px) {
+      header { padding: 6px 12px; gap: 6px; }
+      .logo-box { font-size: 13px; }
+      .logo-badge { display: none; }
+      .header-actions { width: auto; flex: 1; flex-wrap: nowrap; }
+      .header-actions > .btn { min-height: 36px; padding: 6px 8px !important; font-size: 12px !important; }
+      .main-workspace { display: grid; grid-template-columns: 40% minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+      .center-preview { grid-column: 1; grid-row: 1 / 3; padding: 8px; min-height: 0; }
+      .canvas-container { width: min(100%, calc((100dvh - 110px) * 3 / 4)); }
+      .preview-help { font-size: 10px !important; }
+      .mobile-panels { grid-column: 2; grid-row: 1; }
+      .left-panel, .right-panel { grid-column: 2; grid-row: 2; height: 100%; }
+    }
+
+    #toggle-header { display: none; }
+    .editor-scroll { display: contents; }
+    @media (max-width: 1100px) {
+      header { position: relative; }
+      header .logo-box { padding-right: 110px; }
+      #toggle-header { display: inline-flex; position: absolute; right: 12px; top: 4px; min-height: 44px; padding: 6px 10px; font-size: 12px; }
+      body.header-collapsed header { height: 44px; min-height: 44px; padding: 0; }
+      body.header-collapsed header .logo-box, body.header-collapsed .header-actions { display: none; }
+      body.header-collapsed #toggle-header { top: 0; }
+      .editor-scroll { display: block; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; background: var(--panel-bg); padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .mobile-panels { position: static; }
+      .left-panel, .right-panel { flex: none; height: auto; overflow: visible; }
+    }
+    @media (max-width: 1100px) and (orientation: landscape) and (max-height: 600px) {
+      header .logo-box { padding-right: 0; }
+      header { padding-right: 120px; }
+      .editor-scroll { grid-column: 2; grid-row: 1 / 3; height: 100%; }
+      .main-workspace { grid-template-rows: minmax(0, 1fr); }
+      .center-preview { grid-row: 1; }
+      .left-panel, .right-panel { height: auto; }
+    }
   </style>
 </head>
 <body>
 
   <!-- 顶部栏 -->
   <header>
+    <button type="button" id="toggle-header" class="btn btn-secondary" aria-expanded="true" aria-label="折叠顶部工具栏">收起工具栏 ↑</button>
     <div class="logo-box">
       <span>🌿 3:4 竖屏图片排版器</span>
       <span class="logo-badge">#005e2f</span>
@@ -547,6 +631,7 @@
   <div class="main-workspace">
 
     <!-- 左侧：全局排版与图层样式配置 -->
+    <nav class="mobile-panels" aria-label="编辑面板"><button type="button" class="btn btn-secondary" data-panel="content" aria-selected="true">文字与图片</button><button type="button" class="btn btn-secondary" data-panel="style" aria-selected="false">模板与样式</button></nav>
     <div class="left-panel">
       <div class="panel-section">
         
@@ -554,7 +639,7 @@
         <div class="template-box">
           <div class="form-label" style="margin-bottom: 4px;">
             <span style="font-weight: 600; color: var(--text);">📂 预设模板方案</span>
-            <span style="font-size: 11px; color: var(--primary);">● 自动同步</span>
+            <span style="font-size: 11px; color: #a7f3d0;">● 自动同步</span>
           </div>
           <select id="select-preset-template" style="margin-bottom: 8px;">
             <option value="tpl_zizhuang_mint" selected>🌿 自装经验·大头像专属模板 (默认)</option>
@@ -572,7 +657,7 @@
 
         <div class="panel-title">
           <span>图层样式细调</span>
-          <span style="font-size: 11px; color: var(--primary);">#005e2f</span>
+          <span style="font-size: 11px; color: #a7f3d0;">#005e2f</span>
         </div>
 
         <!-- 选中的图层 Tab -->
@@ -598,7 +683,7 @@
             <img id="avatar-img-preview" class="avatar-circle-img" alt="头像">
             <div style="flex: 1;">
               <div style="font-size: 12px; font-weight: 600; color: var(--text);">圆形头像 (防变形高清)</div>
-              <div style="font-size: 11px; color: var(--primary); margin-top: 2px;">● 等比自动裁切</div>
+              <div style="font-size: 11px; color: #a7f3d0; margin-top: 2px;">● 等比自动裁切</div>
               <div style="display: flex; gap: 6px; margin-top: 6px;">
                 <label class="btn btn-secondary btn-sm" style="cursor: pointer;">
                   上传新头像
@@ -621,7 +706,7 @@
         <div class="form-group">
           <div class="form-label">
             <span>字体样式 (免版权商用)</span>
-            <span style="font-size: 11px; color: var(--primary);">● 即时渲染</span>
+            <span style="font-size: 11px; color: #a7f3d0;">● 即时渲染</span>
           </div>
           <select id="select-font-family">
             <option value="system">📱 系统无衬线黑体 (苹方 / 微软雅黑)</option>
@@ -780,9 +865,9 @@
       <div class="canvas-container" id="canvas-wrapper" title="直接拖拽文字/头像可移动位置；Shift+拖拽 = 平移底图；滚轮 = 缩放底图">
         <canvas id="preview-canvas" width="1200" height="1600"></canvas>
       </div>
-      <div style="margin-top: 10px; font-size: 12px; color: var(--text-sub); display: flex; gap: 16px; align-items: center;">
+      <div class="preview-help" style="margin-top: 10px; font-size: 12px; color: var(--text-sub); display: flex; gap: 16px; align-items: center;">
         <span>📐 比例：3:4 竖屏</span>
-        <span>🖱 点选文字/头像直接拖拽移动 · Shift+拖拽平移底图 · 滚轮缩放</span>
+        <span class="desktop-gesture">🖱 点选文字/头像直接拖拽移动 · Shift+拖拽平移底图 · 滚轮缩放</span>
         <span id="resolution-hint">🔍 导出：1200 × 1600</span>
       </div>
     </div>
@@ -856,7 +941,7 @@
       <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
         <div class="panel-title">
           <span>待排版图片 (<span id="img-count">0</span>)</span>
-          <label style="cursor: pointer; color: var(--primary); font-size: 12px;">
+          <label style="cursor: pointer; color: #a7f3d0; font-size: 12px;">
             + 添加图片
             <input type="file" id="file-input" multiple accept="image/*" style="display:none;">
           </label>
@@ -1062,9 +1147,9 @@
         layers: {
           tag: {
             enabled: true,
-            text: "#自装经验",
+            text: "# 自装经验",
             fontFamily: "noto-sans",
-            posX: 7.7,
+            posX: 10.2,
             posY: 11.5,
             fontSizeRatio: 8.1,
             fontWeight: "800",
@@ -1076,7 +1161,7 @@
             bgEnabled: true,
             bgColor: "#005e2f",
             bgOpacity: 100,
-            paddingRatio: 2.0,
+            paddingRatio: 2.5,
             borderRadius: 30,
             shadow: false
           },
@@ -1102,11 +1187,11 @@
           },
           sub: {
             enabled: true,
-            text: "全屋软装清单与避坑指南",
+            text: "手搓一个",
             fontFamily: "noto-serif",
             posX: 50,
             posY: 53.5,
-            fontSizeRatio: 3.6,
+            fontSizeRatio: 8.3,
             fontWeight: "600",
             align: "center",
             color: "#ffffff",
@@ -1126,7 +1211,7 @@
             fontFamily: "noto-sans",
             posX: 97,
             posY: 91.5,
-            fontSizeRatio: 3.4,
+            fontSizeRatio: 5.8,
             fontWeight: "700",
             align: "right",
             color: "#005e2f",
@@ -1138,7 +1223,7 @@
             bgOpacity: 0,
             paddingRatio: 1.0,
             borderRadius: 24,
-            shadow: true,
+            shadow: false,
             avatarSizeRatio: 15.4
           }
         }
@@ -1631,10 +1716,10 @@
         const newId = "tpl_custom_" + Date.now();
         
         const cur = imageQueue[activeImageIndex] || {};
-        templateConfig.tag.text = cur.tagText || templateConfig.tag.text;
-        templateConfig.title.text = cur.titleText || templateConfig.title.text;
-        templateConfig.sub.text = cur.subText || templateConfig.sub.text;
-        templateConfig.author.text = cur.authorText || templateConfig.author.text;
+        templateConfig.tag.text = cur.tagText ?? templateConfig.tag.text;
+        templateConfig.title.text = cur.titleText ?? templateConfig.title.text;
+        templateConfig.sub.text = cur.subText ?? templateConfig.sub.text;
+        templateConfig.author.text = cur.authorText ?? templateConfig.author.text;
 
         templateStore[newId] = {
           id: newId,
@@ -1652,10 +1737,10 @@
         const curTpl = templateStore[currentTemplateId];
         if (!curTpl) return;
         const cur = imageQueue[activeImageIndex] || {};
-        templateConfig.tag.text = cur.tagText || templateConfig.tag.text;
-        templateConfig.title.text = cur.titleText || templateConfig.title.text;
-        templateConfig.sub.text = cur.subText || templateConfig.sub.text;
-        templateConfig.author.text = cur.authorText || templateConfig.author.text;
+        templateConfig.tag.text = cur.tagText ?? templateConfig.tag.text;
+        templateConfig.title.text = cur.titleText ?? templateConfig.title.text;
+        templateConfig.sub.text = cur.subText ?? templateConfig.sub.text;
+        templateConfig.author.text = cur.authorText ?? templateConfig.author.text;
 
         curTpl.layers = JSON.parse(JSON.stringify(templateConfig));
         const persisted = saveStore();
@@ -1907,14 +1992,16 @@
         return null;
       }
 
-      canvasWrapper.addEventListener("mousemove", (e) => {
+      canvasWrapper.addEventListener("pointermove", (e) => {
         if (isDragging) return;
         canvasWrapper.style.cursor = pickLayerAt(e.clientX, e.clientY) ? "move" : "grab";
       });
 
-      canvasWrapper.addEventListener("mousedown", (e) => {
+      canvasWrapper.addEventListener("pointerdown", (e) => {
         const cur = imageQueue[activeImageIndex];
         if (!cur) return;
+        if (!e.isPrimary || e.button !== 0) return;
+        canvasWrapper.setPointerCapture(e.pointerId);
         startMouseX = e.clientX;
         startMouseY = e.clientY;
         const hitKey = e.shiftKey ? null : pickLayerAt(e.clientX, e.clientY);
@@ -1935,7 +2022,7 @@
         e.preventDefault();
       });
 
-      window.addEventListener("mousemove", (e) => {
+      window.addEventListener("pointermove", (e) => {
         if (!isDragging) return;
         const cur = imageQueue[activeImageIndex];
         if (!cur) return;
@@ -1965,7 +2052,7 @@
         }
       });
 
-      window.addEventListener("mouseup", () => {
+      window.addEventListener("pointerup", () => {
         if (isDragging) {
           isDragging = false;
           dragLayerKey = null;
@@ -1974,6 +2061,10 @@
         }
       });
 
+      window.addEventListener("pointercancel", () => {
+        isDragging = false; dragLayerKey = null;
+        canvasWrapper.classList.remove("dragging");
+      });
       canvasWrapper.addEventListener("wheel", (e) => {
         const cur = imageQueue[activeImageIndex];
         if (!cur) return;
@@ -2057,7 +2148,9 @@
       let isCroppingDrag = false;
       let startX = 0, startY = 0, initialOffX = 0, initialOffY = 0;
 
-      cropViewport.addEventListener("mousedown", (e) => {
+      cropViewport.addEventListener("pointerdown", (e) => {
+        if (!e.isPrimary || e.button !== 0) return;
+        cropViewport.setPointerCapture(e.pointerId);
         isCroppingDrag = true;
         cropViewport.classList.add("dragging");
         startX = e.clientX;
@@ -2066,7 +2159,7 @@
         initialOffY = avatarCropState.offY;
       });
 
-      window.addEventListener("mousemove", (e) => {
+      window.addEventListener("pointermove", (e) => {
         if (!isCroppingDrag) return;
         const deltaX = ((e.clientX - startX) / 260) * 100;
         const deltaY = ((e.clientY - startY) / 260) * 100;
@@ -2075,13 +2168,14 @@
         renderCropCanvas();
       });
 
-      window.addEventListener("mouseup", () => {
+      window.addEventListener("pointerup", () => {
         if (isCroppingDrag) {
           isCroppingDrag = false;
           cropViewport.classList.remove("dragging");
         }
       });
 
+      window.addEventListener("pointercancel", () => { isCroppingDrag = false; cropViewport.classList.remove("dragging"); });
       zoomInput.addEventListener("input", (e) => {
         avatarCropState.zoom = parseFloat(e.target.value);
         zoomVal.textContent = `${avatarCropState.zoom}%`;
@@ -2656,6 +2750,31 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      const editorScroll = document.createElement("div");
+      editorScroll.className = "editor-scroll";
+      const workspace = document.querySelector(".main-workspace");
+      editorScroll.append(document.querySelector(".mobile-panels"), document.querySelector(".left-panel"), document.querySelector(".right-panel"));
+      workspace.append(editorScroll);
+      const headerToggle = document.getElementById("toggle-header");
+      function setHeaderCollapsed(collapsed) {
+        document.body.classList.toggle("header-collapsed", collapsed);
+        headerToggle.setAttribute("aria-expanded", String(!collapsed));
+        headerToggle.setAttribute("aria-label", collapsed ? "展开顶部工具栏" : "折叠顶部工具栏");
+        headerToggle.textContent = collapsed ? "展开工具栏 ↓" : "收起工具栏 ↑";
+      }
+      setHeaderCollapsed(readLocalStorageValue("batch_styler_header_collapsed") === "true");
+      headerToggle.addEventListener("click", () => {
+        const collapsed = !document.body.classList.contains("header-collapsed");
+        setHeaderCollapsed(collapsed);
+        writeLocalStorageValue("batch_styler_header_collapsed", String(collapsed));
+      });
+      document.querySelectorAll("[data-panel]").forEach(button => {
+        button.addEventListener("click", () => {
+          document.body.dataset.mobilePanel = button.dataset.panel;
+          document.querySelectorAll("[data-panel]").forEach(item => item.setAttribute("aria-selected", String(item === button)));
+        });
+      });
+      saveStore();
       renderTemplateSelect();
       syncLayerControlsUI();
       bindControlEvents();
