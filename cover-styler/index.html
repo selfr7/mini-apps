@@ -650,6 +650,34 @@
       .mobile-keyboard-open .mobile-editor { flex-basis: 210px; }
       .modal-card { width: min(94vw, 400px); max-height: calc(var(--app-height, 100dvh) - 24px); overflow-y: auto; }
     }
+
+    .mobile-top-tools { display: none; }
+    @media (max-width: 900px) {
+      :root { --bg: #0f1117; --panel-bg: #1a1d26; --card-bg: #232734; --border: #2e3446; --primary: #337851; --primary-hover: #428c63; --text: #f3f4f6; --text-sub: #b2b8c6; --error-text: #ff9d96; }
+      .center-preview { background: #090a0f; }
+      .mobile-top-tools { display: block; flex-shrink: 0; background: var(--panel-bg); border-bottom: 1px solid var(--border); }
+      .mobile-top-tools > summary { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; min-height: 44px; cursor: pointer; color: var(--text); font-size: 14px; list-style: none; }
+      .mobile-top-tools > summary::-webkit-details-marker { display: none; }
+      .tools-summary-hint { color: var(--text-sub); font-size: 12px; }
+      .top-tool-content { max-height: 32dvh; overflow-y: auto; overscroll-behavior: contain; border-top: 1px solid var(--border); }
+      .top-tool-content .mobile-panel-scroll { overflow: visible; flex: none; }
+      .top-tool-content .top-tool-tabs { position: sticky; top: 0; z-index: 2; background: var(--panel-bg); }
+      .mobile-editor { flex: 0 1 clamp(260px, 42dvh, 390px); min-height: 145px; }
+      #mobile-panel-style { overflow-y: auto; display: block; min-height: 0; }
+      #mobile-panel-style > .mobile-panel-scroll { flex: none; overflow: visible; }
+      #mobile-text-host { padding: 10px 16px 2px; }
+      #text-controls textarea { min-height: 56px; max-height: 80px; }
+      #mobile-layer-host .layer-tabs { display: none; }
+      #mobile-layer-host .layer-picker { justify-content: flex-end; }
+      #mobile-layer-host .switch-wrap > span { display: inline; color: var(--text-sub); padding-right: 8px; }
+      .mobile-layer-host { padding-top: 0; padding-bottom: 0; }
+      .mobile-property-tabs button[aria-selected="true"] { color: #a7dcb8; border-bottom-color: #8bc8a0; }
+      .mobile-property-tabs button:disabled { color: #6c7484; }
+      .mobile-nav button[aria-selected="true"] { color: #a7dcb8; box-shadow: inset 0 3px #8bc8a0; }
+      .mobile-panel .btn-secondary:hover { background: #303749; }
+      .mobile-keyboard-open .mobile-editor { flex-basis: 220px; }
+      .mobile-keyboard-open .mobile-top-tools { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -674,6 +702,33 @@
   </header>
   <p class="local-data-notice"><span class="desktop-only">模板仅保存在当前浏览器，不会上传。清除网站数据前，请保存模板文件到电脑备份。</span><span class="mobile-only" id="mobile-storage-status" role="status" aria-live="polite">模板仅存当前浏览器，可保存文件备份。</span></p>
 
+  <details class="mobile-top-tools" id="mobile-top-tools">
+    <summary>图片与模板 <span class="tools-summary-hint">展开 / 收起</span></summary>
+    <div class="top-tool-content">
+      <div class="mobile-property-tabs top-tool-tabs" role="tablist" aria-label="图片与模板">
+        <button type="button" role="tab" data-mobile-panel="images" aria-selected="true">图片选择</button>
+        <button type="button" role="tab" data-mobile-panel="templates" aria-selected="false">模板选择</button>
+      </div>
+      <section class="mobile-panel" id="mobile-panel-images" role="tabpanel" aria-labelledby="mobile-tab-images" hidden>
+        <div class="mobile-property-tabs" role="tablist" aria-label="图片操作">
+          <button type="button" role="tab" data-mobile-images="files" aria-selected="true">添加与选择</button>
+          <button type="button" role="tab" data-mobile-images="crop" aria-selected="false">缩放与裁切</button>
+        </div>
+        <div class="mobile-panel-scroll" id="mobile-images-host"></div>
+        <div class="mobile-panel-scroll" id="mobile-crop-host" hidden></div>
+      </section>
+      <section class="mobile-panel" id="mobile-panel-templates" role="tabpanel" aria-labelledby="mobile-tab-templates" hidden>
+        <div class="mobile-panel-scroll">
+          <div class="mobile-file-actions" id="mobile-file-actions"></div>
+          <div class="mobile-file-options" id="mobile-file-options"></div>
+          <div id="mobile-templates-host"></div>
+          <details class="mobile-storage-help">
+            <summary>保存位置与备份说明</summary>
+            <p>模板、文字和头像自动保存在当前浏览器，不上传网站。清除网站数据或换浏览器可能丢失；可保存 JSON 文件备份，再选择文件恢复。原始底图需重新选择。</p>
+          </details>
+        </div>
+      </section>    </div>
+  </details>
   <!-- 主工作区 -->
   <div class="main-workspace">
 
@@ -699,7 +754,7 @@
             <button class="btn btn-secondary btn-sm" id="btn-reset-templates" style="width: 100%;">清空本地模板</button>
           </div>
           <p class="storage-notice">模板、文字和头像自动保存在当前浏览器本地，不会上传到网站。清除网站数据、更换浏览器或使用无痕模式可能丢失；请用「保存模板文件」备份到电脑。选择文件后会自动应用样式。原始图片仅在本次页面中使用，刷新后需重新选择。</p>
-          <p class="storage-notice" id="template-empty-hint">从空白画布开始编辑，或选择电脑上的模板文件。</p>
+          <p class="storage-notice" id="template-empty-hint">选择模板，或导入电脑上的私人模板文件。</p>
           <div class="storage-status" id="storage-status" role="status" aria-live="polite"></div>
         </div>
 
@@ -1021,10 +1076,8 @@
 
     <div class="mobile-editor" aria-label="手机编辑面板">
       <div class="mobile-layer-host" id="mobile-layer-host"></div>
-      <section class="mobile-panel" id="mobile-panel-text" role="tabpanel" aria-labelledby="mobile-tab-text">
+      <section class="mobile-panel" id="mobile-panel-style" role="tabpanel" aria-labelledby="mobile-layer-title">
         <div class="mobile-panel-scroll" id="mobile-text-host"></div>
-      </section>
-      <section class="mobile-panel" id="mobile-panel-style" role="tabpanel" aria-labelledby="mobile-tab-style" hidden>
         <div class="mobile-property-tabs" role="tablist" aria-label="样式属性">
           <button type="button" role="tab" data-mobile-property="font" aria-selected="true">字体</button>
           <button type="button" role="tab" data-mobile-property="position" aria-selected="false">位置</button>
@@ -1035,33 +1088,15 @@
         </div>
         <div class="mobile-panel-scroll" id="mobile-style-host"></div>
       </section>
-      <section class="mobile-panel" id="mobile-panel-images" role="tabpanel" aria-labelledby="mobile-tab-images" hidden>
-        <div class="mobile-property-tabs" role="tablist" aria-label="图片操作">
-          <button type="button" role="tab" data-mobile-images="files" aria-selected="true">添加与选择</button>
-          <button type="button" role="tab" data-mobile-images="crop" aria-selected="false">缩放与裁切</button>
-        </div>
-        <div class="mobile-panel-scroll" id="mobile-images-host"></div>
-        <div class="mobile-panel-scroll" id="mobile-crop-host" hidden></div>
-      </section>
-      <section class="mobile-panel" id="mobile-panel-templates" role="tabpanel" aria-labelledby="mobile-tab-templates" hidden>
-        <div class="mobile-panel-scroll">
-          <div class="mobile-file-actions" id="mobile-file-actions"></div>
-          <div class="mobile-file-options" id="mobile-file-options"></div>
-          <div id="mobile-templates-host"></div>
-          <details class="mobile-storage-help">
-            <summary>保存位置与备份说明</summary>
-            <p>模板、文字和头像自动保存在当前浏览器，不上传网站。清除网站数据或换浏览器可能丢失；可保存 JSON 文件备份，再选择文件恢复。原始底图需重新选择。</p>
-          </details>
-        </div>
-      </section>
+
     </div>
   </div>
 
-  <nav class="mobile-nav" role="tablist" aria-label="编辑工具">
-    <button type="button" role="tab" id="mobile-tab-text" data-mobile-panel="text" aria-controls="mobile-panel-text" aria-selected="true">文字</button>
-    <button type="button" role="tab" id="mobile-tab-style" data-mobile-panel="style" aria-controls="mobile-panel-style" aria-selected="false">样式</button>
-    <button type="button" role="tab" id="mobile-tab-images" data-mobile-panel="images" aria-controls="mobile-panel-images" aria-selected="false">图片</button>
-    <button type="button" role="tab" id="mobile-tab-templates" data-mobile-panel="templates" aria-controls="mobile-panel-templates" aria-selected="false">模板</button>
+  <nav class="mobile-nav" role="tablist" aria-label="选择编辑图层">
+    <button type="button" role="tab" data-mobile-layer="tag" aria-controls="mobile-panel-style" aria-selected="false">标签</button>
+    <button type="button" role="tab" id="mobile-layer-title" data-mobile-layer="title" aria-controls="mobile-panel-style" aria-selected="true">主标题</button>
+    <button type="button" role="tab" data-mobile-layer="sub" aria-controls="mobile-panel-style" aria-selected="false">副标题</button>
+    <button type="button" role="tab" data-mobile-layer="author" aria-controls="mobile-panel-style" aria-selected="false">头像昵称</button>
   </nav>
 
   <!-- 头像专属可视化圆形裁切模态框 -->
@@ -1421,21 +1456,21 @@
     }
 
     function setMobilePanel(panel) {
-      mobilePanel = panel;
-      document.body.classList.remove("mobile-preview-expanded");
-      const previewButton = document.getElementById("btn-mobile-preview");
-      previewButton.textContent = "放大预览";
-      previewButton.setAttribute("aria-expanded", "false");
+      const selectedPanel = panel === "templates" ? "templates" : "images";
+      mobilePanel = selectedPanel;
       document.querySelectorAll("[data-mobile-panel]").forEach(button => {
-        const selected = button.dataset.mobilePanel === panel;
+        const selected = button.dataset.mobilePanel === selectedPanel;
         button.setAttribute("aria-selected", String(selected));
         button.tabIndex = selected ? 0 : -1;
         document.getElementById(`mobile-panel-${button.dataset.mobilePanel}`).hidden = !selected;
       });
-      document.getElementById("mobile-layer-host").hidden = !["text", "style"].includes(panel);
     }
 
     function syncMobileLayer() {
+      document.querySelectorAll("[data-mobile-layer]").forEach(button => {
+        const selected = button.dataset.mobileLayer === activeLayerKey;
+        button.setAttribute("aria-selected", String(selected)); button.tabIndex = selected ? 0 : -1;
+      });
       document.querySelectorAll("[data-text-layer]").forEach(group => {
         group.classList.toggle("mobile-text-active", group.dataset.textLayer === activeLayerKey);
       });
@@ -1490,6 +1525,12 @@
         updateViewport();
       }
 
+      document.querySelectorAll("[data-mobile-layer]").forEach(button => {
+        button.addEventListener("click", () => selectLayerPanel(button.dataset.mobileLayer));
+      });
+      document.getElementById("mobile-top-tools").addEventListener("toggle", () => {
+        requestAnimationFrame(fitPreview);
+      });
       document.querySelectorAll("[data-mobile-panel]").forEach(button => {
         button.addEventListener("click", () => setMobilePanel(button.dataset.mobilePanel));
       });
@@ -1613,7 +1654,8 @@
         currentTemplateId === "tpl_blank" && TEMPLATE_LAYER_KEYS.every(key => !templateConfig[key].text));
     }
 
-    function switchTemplate(id) {
+    function switchTemplate(id, loadBackground = true) {
+
       if (!templateStore[id]) return;
       currentTemplateId = id;
       templateConfig = JSON.parse(JSON.stringify(templateStore[id].layers));
@@ -1652,7 +1694,7 @@
       background.width = 1200;
       background.height = 1600;
       const backgroundCtx = background.getContext("2d");
-      backgroundCtx.fillStyle = "#faf7f2";
+      backgroundCtx.fillStyle = "#ffffff";
       backgroundCtx.fillRect(0, 0, background.width, background.height);
       const img = new Image();
       img.onload = () => {
@@ -2769,6 +2811,14 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      const demoIds = ["tpl_layout_demo", "tpl_demo_sea", "tpl_demo_city", "tpl_demo_coffee", "tpl_demo_reading", "tpl_demo_quote", "tpl_demo_guide", "tpl_demo_event", "tpl_demo_recipe"];
+      demoIds.forEach(id => { delete templateStore[id]; });
+      if (!templateStore[currentTemplateId]) {
+        if (!templateStore.tpl_blank) templateStore.tpl_blank = createEmptyTemplateStore().tpl_blank;
+        currentTemplateId = "tpl_blank";
+        templateConfig = JSON.parse(JSON.stringify(templateStore.tpl_blank.layers));
+        currentAvatarData = ""; avatarImg.src = DEFAULT_AVATAR;
+      }
       renderTemplateSelect();
       selectLayerPanel(activeLayerKey);
       bindControlEvents();
