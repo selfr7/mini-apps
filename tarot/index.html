@@ -747,10 +747,80 @@
     .meaning-orientation-tag {
       position: absolute; bottom: 8px; right: 8px;
       font-size: 11px; font-weight: 600;
-      padding: 2px 8px; border-radius: 6px;
-      background: rgba(13, 14, 28, 0.85);
-      border: 1px solid rgba(217,185,108,0.4);
+      padding: 3px 8px; border-radius: 6px;
+      background: rgba(13, 14, 28, 0.88);
+      border: 1px solid rgba(217,185,108,0.5);
       color: #e5c365;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+      transition: all 0.2s;
+    }
+    .meaning-orientation-tag:hover {
+      background: rgba(30, 32, 60, 0.95);
+      border-color: #d9b96c;
+      transform: scale(1.05);
+    }
+
+    /* ---- 牌意图鉴 ---- */
+    #view-library { overflow: hidden; min-height: 0; }
+    .library-filter-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+      margin: 8px 0 14px;
+    }
+    .lib-tab {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(217,185,108,0.2);
+      color: #b5aed1;
+      padding: 5px 12px; font-size: 11.5px; border-radius: 14px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lib-tab.active, .lib-tab:hover {
+      background: rgba(217,185,108,0.18);
+      border-color: #d9b96c;
+      color: #f7edd4;
+    }
+    .library-grid {
+      flex: 1 1 0; min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+      gap: 10px;
+      padding: 4px 2px 14px;
+      width: 100%;
+    }
+    .lib-card-item {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(18, 19, 36, 0.6);
+      border: 1px solid rgba(217,185,108,0.15);
+      border-radius: 8px;
+      padding: 6px 4px;
+      cursor: pointer;
+      transition: transform 0.18s, border-color 0.18s, background 0.18s;
+      text-align: center;
+    }
+    .lib-card-item:hover {
+      transform: translateY(-3px);
+      border-color: #d9b96c;
+      background: rgba(28, 30, 56, 0.9);
+    }
+    .lib-card-thumb {
+      width: 60px; height: 100px;
+      border-radius: 4px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      margin-bottom: 6px;
+    }
+    .lib-card-name {
+      font-size: 11.5px; color: #ede7d8; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      width: 100%;
+    }
+    .lib-card-sub {
+      font-size: 9.5px; color: #8e87a8; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      width: 100%;
     }
 
     /* ---- 结算页 ---- */
@@ -925,6 +995,33 @@
           <div class="tin-corner c-br"></div>
         </div>
         <div class="card-box-tip">点击牌盒，开启今天的能量指引吧</div>
+        <div style="margin-top: 14px;">
+          <button class="btn btn-ghost" id="btnOpenLibrary" style="font-size: 13px; padding: 7px 18px; border-radius: 20px;">
+            📖 查阅 78 张牌意图鉴
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 牌意图鉴 -->
+    <section class="view" id="view-library">
+      <div class="orn">✦</div>
+      <div class="page-title">牌意图鉴</div>
+      <div class="page-sub">随时查阅 78 张塔罗牌的画面象征与正逆位解读</div>
+
+      <div class="library-filter-tabs">
+        <button class="lib-tab active" data-suit="all">全部 (78)</button>
+        <button class="lib-tab" data-suit="major">大阿卡纳 (22)</button>
+        <button class="lib-tab" data-suit="wands">权杖 (14)</button>
+        <button class="lib-tab" data-suit="cups">圣杯 (14)</button>
+        <button class="lib-tab" data-suit="swords">宝剑 (14)</button>
+        <button class="lib-tab" data-suit="pentacles">星币 (14)</button>
+      </div>
+
+      <div class="library-grid" id="libraryGrid"></div>
+
+      <div class="stage-actions" style="margin-top: 18px;">
+        <button class="btn btn-dim btn-block" id="btnLibraryBackHome">返回首页</button>
       </div>
     </section>
 
@@ -1043,7 +1140,7 @@
       <div class="meaning-card-wrap">
         <div class="meaning-card" id="meaningCard">
           <img id="meaningImg" src="" alt="牌面" />
-          <div class="meaning-orientation-tag" id="meaningOrientation">正位</div>
+          <button class="meaning-orientation-tag" id="meaningOrientation" title="点击切换正位/逆位">正位</button>
         </div>
       </div>
       <div class="pager" id="meaningPager" style="display:none;">

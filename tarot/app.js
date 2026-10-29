@@ -20,10 +20,12 @@
     flipped: [],       // 已翻开解读的位次下标
     current: 0,        // 当前正在解读的第几张
     noteTarget: null,  // 记录感受时的牌下标
-    pool: []           // 牌堆剩余可抽的 deck 下标（洗乱）
+    pool: [],          // 牌堆剩余可抽的 deck 下标（洗乱）
+    libraryCardIndex: null, // 图鉴查看时的具体 DECK 下标
+    libraryReversed: false  // 图鉴查看时的正逆位状态
   };
 
-  var DECK = window.TAROT_DECK;      // 22 张牌数据
+  var DECK = window.TAROT_DECK;      // 78 张牌数据（22 张大阿卡纳 + 56 张小阿卡纳）
   var IMAGES = window.TAROT_IMAGES;  // id -> data:uri
 
   // ============ 工具 ============
@@ -90,6 +92,84 @@
     $('cardBox').addEventListener('click', function () {
       showView('spread');
     });
+    var btnLib = $('btnOpenLibrary');
+    if (btnLib) {
+      btnLib.addEventListener('click', function () {
+        renderLibraryGrid('all');
+        showView('library');
+      });
+    }
+  }
+
+  // ============ 牌意图鉴 ============
+  var SUIT_NAMES = {
+    major: '大阿卡纳',
+    wands: '权杖',
+    cups: '圣杯',
+    swords: '宝剑',
+    pentacles: '星币'
+  };
+
+  function renderLibraryGrid(filterSuit) {
+    var grid = $('libraryGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (var i = 0; i < DECK.length; i++) {
+      var c = DECK[i];
+      var s = c.suit || c.arcana;
+      if (filterSuit && filterSuit !== 'all') {
+        if (filterSuit === 'major' && c.arcana !== 'major') continue;
+        if (filterSuit !== 'major' && c.suit !== filterSuit) continue;
+      }
+      var item = document.createElement('div');
+      item.className = 'lib-card-item';
+      item.setAttribute('role', 'button');
+      item.setAttribute('title', c.name + ' (' + c.nameEn + ') - 点击查阅牌意');
+
+      var img = document.createElement('img');
+      img.className = 'lib-card-thumb';
+      img.src = IMAGES[c.id];
+      img.alt = c.name;
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'lib-card-name';
+      nameEl.textContent = c.name;
+
+      var subEl = document.createElement('div');
+      subEl.className = 'lib-card-sub';
+      subEl.textContent = c.arcana === 'major' ? ('No.' + c.number) : (SUIT_NAMES[c.suit] || '');
+
+      item.appendChild(img);
+      item.appendChild(nameEl);
+      item.appendChild(subEl);
+
+      (function (deckIdx) {
+        item.addEventListener('click', function () {
+          state.libraryCardIndex = deckIdx;
+          state.libraryReversed = false;
+          showMeaningView();
+        });
+      })(i);
+
+      grid.appendChild(item);
+    }
+  }
+
+  function initLibrary() {
+    var tabs = document.querySelectorAll('.lib-tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener('click', function () {
+        for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
+        this.classList.add('active');
+        renderLibraryGrid(this.getAttribute('data-suit'));
+      });
+    }
+    var btnBack = $('btnLibraryBackHome');
+    if (btnBack) {
+      btnBack.addEventListener('click', function () {
+        showView('home');
+      });
+    }
   }
 
   // ============ 牌阵选择 ============
@@ -438,14 +518,15 @@
   }
 
   function showMeaningView() {
+    var isLib = state.libraryCardIndex !== null;
     var pos = state.current;
-    var card = cardAt(pos);
-    var rev = isReversed(pos);
+    var card = isLib ? DECK[state.libraryCardIndex] : cardAt(pos);
+    var rev = isLib ? !!state.libraryReversed : isReversed(pos);
     var o = rev ? 'reversed' : 'upright';
-    var kws = card.keywords[o] || [];
+    var kws = (card.keywords && card.keywords[o]) || [];
 
     $('meaningTitle').textContent = card.name + (rev ? ' · 逆位' : '');
-    $('meaningSub').textContent = card.nameEn + ' ｜ ' + labelAt(pos);
+    $('meaningSub').textContent = card.nameEn + ' ｜ ' + (isLib ? (SUIT_NAMES[card.suit] || '大阿卡纳') : labelAt(pos));
 
     var mImg = $('meaningImg');
     if (mImg) {
@@ -455,7 +536,7 @@
     }
     var mOri = $('meaningOrientation');
     if (mOri) {
-      mOri.textContent = rev ? '逆位 Reversed' : '正位 Upright';
+      mOri.textContent = rev ? '逆位 Reversed 🔄' : '正位 Upright 🔄';
     }
 
     var kwHtml = '';
@@ -468,7 +549,7 @@
       '</div>' +
       '<div class="meaning-row">' +
         '<div class="meaning-label">📜 牌意</div>' +
-        '<div class="meaning-text">' + (card.meaning[o] || '') + '</div>' +
+        '<div class="meaning-text">' + ((card.meaning && card.meaning[o]) || '') + '</div>' +
       '</div>';
 
     if (card.imagerySections && card.imagerySections.length) {
@@ -488,7 +569,6 @@
       '</div>';
     }
     if (rev && card.reversedReading) {
-      // 逆位牌：用专属逆位解读替换正位向的占卜建议
       html += '<div class="meaning-row reversed-row">' +
         '<div class="meaning-label">🔄 逆位解读</div>' +
         mdToHtml(card.reversedReading) +
@@ -505,10 +585,21 @@
       '</div>';
     }
     $('meaningBody').innerHTML = html;
-    var sortedFlipped = flippedSorted();
-    var isLastMeaning = state.current === sortedFlipped[sortedFlipped.length - 1];
-    $('btnMeaningNext').textContent = isLastMeaning ? '完成本次抽牌 ✓' : '下一张 →';
-    updateMeaningPager(pos);
+
+    if (isLib) {
+      $('meaningPager').style.display = 'none';
+      $('btnMeaningNext').style.display = 'none';
+      $('btnMeaningNote').style.display = 'none';
+      $('btnMeaningBack').textContent = '返回牌意图鉴 📖';
+    } else {
+      $('btnMeaningNext').style.display = 'block';
+      $('btnMeaningNote').style.display = 'block';
+      $('btnMeaningBack').textContent = '返回牌面';
+      var sortedFlipped = flippedSorted();
+      var isLastMeaning = state.current === sortedFlipped[sortedFlipped.length - 1];
+      $('btnMeaningNext').textContent = isLastMeaning ? '完成本次抽牌 ✓' : '下一张 →';
+      updateMeaningPager(pos);
+    }
     showView('meaning');
   }
 
@@ -850,6 +941,7 @@
   // ============ 绑定 ============
   function init() {
     initHome();
+    initLibrary();
     initSpread();
 
     $('btnViewMeaning').addEventListener('click', showMeaningView);
@@ -880,9 +972,30 @@
     });
     $('btnMeaningNote').addEventListener('click', openNoteModal);
     $('btnMeaningBack').addEventListener('click', function () {
-      // 返回翻完牌的抽牌页（单牌阵/三牌阵一致，均带查看牌意/记录感受/完成三个操作）
-      showView('draw');
+      if (state.libraryCardIndex !== null) {
+        state.libraryCardIndex = null;
+        showView('library');
+      } else {
+        // 返回翻完牌的抽牌页（单牌阵/三牌阵一致，均带查看牌意/记录感受/完成三个操作）
+        showView('draw');
+      }
     });
+    var mOriBtn = $('meaningOrientation');
+    if (mOriBtn) {
+      mOriBtn.addEventListener('click', function () {
+        if (state.libraryCardIndex !== null) {
+          state.libraryReversed = !state.libraryReversed;
+          showMeaningView();
+        } else {
+          // 抽牌模式下也支持临时点选查看另一种朝向的含义
+          var c = cardAt(state.current);
+          if (c) {
+            c._rev = isReversed(state.current) ? 'upright' : 'reversed';
+            showMeaningView();
+          }
+        }
+      });
+    }
     $('btnSaveAlbum').addEventListener('click', saveResultToAlbum);
     var pClose = $('btnPreviewClose');
     if (pClose) {
