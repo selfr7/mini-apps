@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Self-Storage | 随心储物格</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --app-max-width: 460px; /* 限定手机尺寸 */
+      --bg-ambient: #eef0f3;  /* PC端环境底色 */
+      --bg: #f8f9fa;          /* 手机画布主底色 */
+      --card-bg: #ffffff;
+      --text-main: #14171a;
+      --text-sub: #57606a;
+      --text-muted: #8c959f;
+      --border-subtle: #e6e8ec;
+      --border-hover: #cfd4dc;
+      --accent: #1e2227;
+      --ring: rgba(0, 180, 216, 0.28);
+      
+      /* 空白底托槽位 */
+      --slot-bg: #edf0f3;
+      --slot-inner-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08), inset 0 -1px 2px rgba(255, 255, 255, 0.85);
+      --slot-border: #d5d9e0;
+      --slot-hover-bg: #e4e7ec;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-btn: 11px;
+      
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-serif: 'Noto Serif SC', "Songti SC", SimSun, serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-ambient: #090a0d;
+      --bg: #121418;
+      --card-bg: #181b20;
+      --text-main: #f3f5f8;
+      --text-sub: #9ca6b5;
+      --text-muted: #616e7f;
+      --border-subtle: #242932;
+      --border-hover: #374151;
+      --accent: #f0f3f6;
+      --ring: rgba(72, 202, 228, 0.35);
+      
+      --slot-bg: #15181e;
+      --slot-inner-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.55), inset 0 -1px 1px rgba(255, 255, 255, 0.05);
+      --slot-border: #262c36;
+      --slot-hover-bg: #1d2129;
+      
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      background-color: var(--bg-ambient);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      justify-content: center;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* 手机主壳容器 (限制在手机尺寸，桌面居中优雅展示) */
+    .mobile-phone-container {
+      width: 100%;
+      max-width: var(--app-max-width);
+      min-height: 100vh;
+      min-height: 100dvh;
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.08);
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    @media (max-width: 500px) {
+      .mobile-phone-container {
+        border-left: none;
+        border-right: none;
+        box-shadow: none;
+      }
+    }
+
+    /* 顶部导航 (原生App精致顶栏) */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #00B4D8 0%, #3A86FF 100%);
+      color: #ffffff;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(0, 180, 216, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-title .tagline {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: var(--slot-hover-bg);
+    }
+
+    /* 更多功能下拉浮层 (Settings Menu) */
+    .menu-dropdown {
+      position: absolute;
+      top: 56px;
+      right: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      width: 220px;
+      padding: 6px;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      animation: fadeInDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .menu-dropdown.show {
+      display: flex;
+    }
+
+    @keyframes fadeInDown {
+      0% { opacity: 0; transform: translateY(-8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-item {
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.12s;
+    }
+
+    .menu-item:hover, .menu-item:active {
+      background: var(--slot-hover-bg);
+    }
+
+    .menu-item.danger {
+      color: #e63946;
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 4px 0;
+    }
+
+    /* 手机主体内容区 */
+    main {
+      flex: 1;
+      padding: 14px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* 手机端紧凑统计看板 */
+    .mobile-dashboard {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dashboard-stat-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+    }
+
+    .dash-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dash-value {
+      font-size: 16px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .dash-value span {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .dash-progress-wrap {
+      width: 60px;
+      height: 5px;
+      background: var(--slot-bg);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+
+    .dash-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00B4D8, #FF758F);
+      width: 0%;
+      transition: width 0.35s ease;
+      border-radius: 99px;
+    }
+
+    /* 搜索与颜色横向滑条 */
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .search-bar {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      font-size: 13px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: #00B4D8;
+      box-shadow: 0 0 0 3px var(--ring);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    /* 横向滑动色盘 */
+    .color-scroll-track {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 3px 2px 6px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .color-scroll-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .palette-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      transition: transform 0.15s;
+    }
+
+    .palette-btn:active {
+      transform: scale(0.9);
+    }
+
+    .palette-btn.active {
+      border-color: var(--text-main);
+      transform: scale(1.15);
+      box-shadow: 0 0 0 2px var(--card-bg), 0 3px 6px rgba(0,0,0,0.3);
+    }
+
+    .palette-all-btn {
+      font-size: 11px;
+      color: var(--text-sub);
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 3px 9px;
+      font-weight: 700;
+      flex-shrink: 0;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .palette-all-btn.active {
+      color: var(--text-main);
+      border-color: var(--text-main);
+      background: var(--slot-hover-bg);
+    }
+
+    /* 网格标题栏 */
+    .matrix-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2px;
+      padding: 0 2px;
+    }
+
+    .matrix-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .matrix-badge {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 8px;
+    }
+
+    /* 储藏网格核心区域 (手机自适应列) */
+    .storage-grid {
+      display: grid;
+      gap: 11px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* 3D 立体按键格子 */
+    .cell {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius-btn);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    /* 空白格：微凹底托槽位 */
+    .cell.empty {
+      background: var(--slot-bg);
+      border: 1.5px dashed var(--slot-border);
+      box-shadow: var(--slot-inner-shadow);
+      color: var(--text-muted);
+    }
+
+    .cell.empty:active {
+      background: var(--slot-hover-bg);
+      border-color: #00B4D8;
+      transform: scale(0.96);
+    }
+
+    .cell.empty .cell-id-subtle {
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      opacity: 0.45;
+      letter-spacing: -0.2px;
+    }
+
+    .cell.empty .cell-plus {
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0.35;
+      color: var(--text-muted);
+    }
+
+    /* 填充格：立体实体按键 */
+    .cell.filled {
+      border: none;
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(0, 0, 0, 0.08) 100%);
+      box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.75),
+        0 4.5px 0 var(--cell-shadow-base),
+        0 7px 12px rgba(0, 0, 0, 0.16);
+      transform: translateY(0);
+      animation: cellPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes cellPop {
+      0% { transform: scale(0.85); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 手机触屏按压深度打击感 (Active Press) */
+    .cell.filled:active {
+      transform: translateY(3.5px);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.15),
+        0 1px 0 var(--cell-shadow-base),
+        0 2px 4px rgba(0, 0, 0, 0.16);
+      filter: brightness(0.97);
+    }
+
+    /* 纯色格微光珠光质感 */
+    .cell.filled.pure-color::after {
+      content: '';
+      position: absolute;
+      top: 14%;
+      left: 16%;
+      width: 25%;
+      height: 14%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 80%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* 白色便签贴纸：白底贴纸 + 盒子同色字 */
+    .cell-sticker-label {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 3px 6px;
+      min-width: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0.5px;
+      box-shadow: 
+        0 1.5px 3.5px rgba(0, 0, 0, 0.22), 
+        inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+      z-index: 2;
+      pointer-events: none;
+      max-width: 86%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .cell-sticker-label.single-char {
+      font-size: 15px;
+      padding: 3px 5px;
+    }
+
+    .cell-filled-id {
+      position: absolute;
+      bottom: 4px;
+      right: 5px;
+      font-size: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      opacity: 0.4;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .cell.filtered-out {
+      opacity: 0.12 !important;
+      transform: scale(0.92) !important;
+      box-shadow: none !important;
+      pointer-events: none;
+      filter: grayscale(85%);
+    }
+
+    .cell.search-matched {
+      outline: 3px solid #FFD166;
+      outline-offset: 2px;
+      box-shadow: 0 0 16px rgba(255, 209, 102, 0.85) !important;
+      transform: scale(1.05) !important;
+      z-index: 10;
+    }
+
+    /* 悬停气泡 Tooltip (桌面端辅助) */
+    .cell-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(18, 22, 28, 0.94);
+      color: #ffffff;
+      padding: 6px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-family: var(--font-ui);
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    @media (hover: hover) {
+      .cell:hover .cell-tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    /* ========================================================
+     * 移动端专属抽屉弹窗 (Bottom Sheet / Drawer)
+     * ======================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 20, 0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-end; /* 手机端贴底弹出 */
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-container {
+      background: var(--card-bg);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      width: 100%;
+      max-width: var(--app-max-width);
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transform: translateY(100%); /* 从屏幕底端滑出 */
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      max-height: 88vh;
+      max-height: 88dvh;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .modal-backdrop.active .modal-container {
+      transform: translateY(0);
+    }
+
+    /* 顶部拖拽把手指示条 */
+    .modal-drag-bar {
+      width: 36px;
+      height: 4px;
+      background: var(--slot-border);
+      border-radius: 99px;
+      margin: 10px auto 4px;
+    }
+
+    .modal-header {
+      padding: 10px 18px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .modal-cell-tag {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-sub);
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+
+    .modal-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* 调色板选色器 */
+    .color-picker-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch-item {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+      transition: transform 0.12s;
+    }
+
+    .color-swatch-item:active {
+      transform: scale(0.9);
+    }
+
+    .color-swatch-item.selected {
+      border-color: var(--text-main);
+      transform: scale(1.15);
+      box-shadow: 0 0 0 2px var(--card-bg), 0 3px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .custom-color-input {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px dashed var(--border-subtle);
+      cursor: pointer;
+      background: transparent;
+      padding: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .custom-color-input::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .custom-color-input::-webkit-color-swatch {
+      border: none;
+      border-radius: 50%;
+    }
+
+    /* 专属盒子标签双向输入区 */
+    .tag-explicit-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+
+    .tag-input-box {
+      width: 76px;
+      padding: 6px 8px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      border-radius: 6px;
+      border: 1.5px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .tag-input-box:focus {
+      border-color: #00B4D8;
+    }
+
+    .tag-explicit-tip {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    /* 文本输入框 */
+    .storage-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      font-size: 14px;
+      font-family: var(--font-serif);
+      line-height: 1.6;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg);
+      color: var(--text-main);
+      resize: none;
+      outline: none;
+    }
+
+    .storage-textarea:focus {
+      border-color: #00B4D8;
+      background: var(--card-bg);
+    }
+
+    .tag-detect-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+    }
+
+    .tag-pill-preview {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      background: #ffffff;
+      color: #00B4D8;
+      font-weight: 800;
+      border-radius: 4px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+
+    .tag-pill-preview.empty {
+      background: var(--slot-bg);
+      color: var(--text-muted);
+      box-shadow: none;
+      border: 1px solid var(--border-subtle);
+      font-weight: 500;
+    }
+
+    /* 查看模式 */
+    .view-tag-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .view-tag-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 5px;
+      background: #ffffff;
+      color: #3A86FF;
+      box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+      letter-spacing: 0.5px;
+    }
+
+    .view-content-box {
+      background: var(--bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-family: var(--font-serif);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .storage-meta-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      padding-top: 2px;
+    }
+
+    /* 抽屉底部操作栏 */
+    .modal-footer {
+      padding: 12px 18px;
+      padding-bottom: max(14px, env(safe-area-inset-bottom));
+      background: var(--bg);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: var(--font-ui);
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #181a1d 0%, #0d0f11 100%);
+      color: #ffffff;
+      border-color: #181a1d;
+      flex: 1;
+    }
+
+    [data-theme="dark"] .btn-primary {
+      background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
+      color: #0c1520;
+      border-color: #38BDF8;
+    }
+
+    .btn-danger {
+      color: #e63946;
+      border-color: rgba(230, 57, 70, 0.3);
+    }
+
+    /* 规格切换弹窗 */
+    .grid-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .grid-modal-overlay.show {
+      display: flex;
+    }
+
+    .grid-modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 320px;
+      padding: 18px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .grid-option-btn {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .grid-option-btn.active {
+      border-color: #00B4D8;
+      background: var(--slot-hover-bg);
+      color: #00B4D8;
+    }
+
+    /* Toast 浮条 (手机顶部或贴近视口) */
+    .toast-container {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 2000;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--accent);
+      color: var(--card-bg);
+      padding: 10px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-20px);
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 手机视口容器 -->
+  <div class="mobile-phone-container">
+    
+    <!-- 顶部原生式导航 -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">📦</div>
+        <div class="brand-title">
+          <span>Self-Storage</span>
+          <span class="tagline">随心储物格</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggleBtn" title="切换深色/浅色模式">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button class="icon-btn" id="moreMenuBtn" title="更多功能">
+          <span>⋮</span>
+        </button>
+      </div>
+
+      <!-- 更多功能下拉菜单 -->
+      <div class="menu-dropdown" id="moreMenuDropdown">
+        <div class="menu-item" id="menuGridSizeBtn">
+          <span>📐 切换网格规格</span>
+          <span style="font-size:11px; color:var(--text-muted);" id="menuGridBadge">5×8</span>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-item" id="menuExportBtn">
+          <span>📤 备份导出 (JSON)</span>
+        </div>
+        <div class="menu-item" id="menuImportBtn">
+          <span>📥 导入备份数据</span>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+        <div class="menu-divider"></div>
+        <div class="menu-item danger" id="menuResetBtn">
+          <span>🗑️ 清空全部储物格</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主体区域 -->
+    <main>
+      <!-- 紧凑统计看板 -->
+      <div class="mobile-dashboard">
+        <div class="dashboard-stat-unit">
+          <span class="dash-label">已储藏</span>
+          <div class="dash-value">
+            <span id="filledCount">0</span>
+            <span>/</span>
+            <span id="totalCellsCount">40</span>
+          </div>
+        </div>
+
+        <div class="dashboard-stat-unit">
+          <span class="dash-label">空间占用</span>
+          <div class="dash-value" id="occupancyRate">0%</div>
+          <div class="dash-progress-wrap">
+            <div class="dash-progress-fill" id="occupancyBar"></div>
+          </div>
+        </div>
+
+        <div class="dashboard-stat-unit">
+          <span class="dash-label">可用仓位</span>
+          <div class="dash-value" id="freeCount">40</div>
+        </div>
+      </div>
+
+      <!-- 搜索与横向滑动调色筛选条 -->
+      <div class="filter-section">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="搜索文本或便签...">
+        </div>
+
+        <div class="color-scroll-track" id="colorFilterPalette">
+          <button class="palette-all-btn active" data-color="all">全部</button>
+          <!-- JS 自动注入横向调色圈 -->
+        </div>
+      </div>
+
+      <!-- 矩阵网格标题 -->
+      <div class="matrix-bar">
+        <span class="matrix-title">储物格子矩阵</span>
+        <span class="matrix-badge" id="gridBadge">5 × 8 · 40 格</span>
+      </div>
+
+      <!-- 核心储藏网格 (5列黄金排布) -->
+      <div class="storage-grid" id="storageGrid">
+        <!-- JS 动态注入 -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- 手机端底部上滑抽屉 (Bottom Sheet Modal) -->
+  <div class="modal-backdrop" id="storageModal">
+    <div class="modal-container">
+      <div class="modal-drag-bar"></div>
+      
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="modal-cell-tag" id="modalCellId">#A-01</span>
+          <h3 class="modal-title" id="modalTitle">存入储物格</h3>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+      </div>
+
+      <!-- 录入与编辑模式 -->
+      <div class="modal-body" id="modalEditSection">
+        <div>
+          <div class="field-label">
+            <span>挑选盒子色彩</span>
+            <span style="font-weight:700; font-family:var(--font-mono); color:var(--text-sub);" id="colorHexLabel">#00B4D8</span>
+          </div>
+          <div class="color-picker-group" id="swatchList">
+            <input type="color" class="custom-color-input" id="customColorPicker" title="自选颜色">
+          </div>
+        </div>
+
+        <!-- 显式便签输入框 (双向联动) -->
+        <div>
+          <div class="field-label">
+            <span>白色便签文字（最多两字）</span>
+            <span style="font-size:11px; font-weight:normal; color:var(--text-muted);">留空即纯色盒子</span>
+          </div>
+          <div class="tag-explicit-row">
+            <input type="text" class="tag-input-box" id="explicitTagInput" maxlength="2" placeholder="无标签">
+            <div class="tag-explicit-tip">
+              文本末尾写 <strong>#标签</strong> 或 <strong>＃标签</strong> 会自动同步；留空则方格为纯色。
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="field-label">
+            <span>储藏的文本内容</span>
+          </div>
+          <textarea class="storage-textarea" id="storageTextarea" placeholder="在这里写下你要存放的文字内容（例如：今天在海边散步 #海）..."></textarea>
+        </div>
+
+        <!-- 实时贴纸预览条 -->
+        <div class="tag-detect-banner">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="color:var(--text-sub);">表面贴纸:</span>
+            <span class="tag-pill-preview empty" id="tagDetectPreview">纯色方格 (无便签)</span>
+          </div>
+          <span style="font-size:10px; color:var(--text-muted);">白底 + 盒色字</span>
+        </div>
+      </div>
+
+      <!-- 查看模式 -->
+      <div class="modal-body" id="modalViewSection" style="display:none;">
+        <div class="view-tag-header" id="viewTagHeader" style="display:none;">
+          <span style="font-size:12px; font-weight:700; color:var(--text-muted);">便签标签：</span>
+          <span class="view-tag-badge" id="viewTagBadge">灵感</span>
+        </div>
+        <div>
+          <div class="field-label">储藏的文字内容</div>
+          <div class="view-content-box" id="viewContentBox"></div>
+        </div>
+        <div class="storage-meta-info">
+          <span id="viewTimeInfo">存入：-</span>
+          <span id="viewCharCount">共 0 字</span>
+        </div>
+      </div>
+
+      <!-- 抽屉底部按钮 -->
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="deleteCellBtn" style="display:none;">取出清空</button>
+        <button class="btn" id="modalCancelBtn">取消</button>
+        <button class="btn" id="editFromViewBtn" style="display:none; flex:1;">修改编辑</button>
+        <button class="btn btn-primary" id="saveCellBtn">保存封存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 网格规格切换浮层 -->
+  <div class="grid-modal-overlay" id="gridModalOverlay">
+    <div class="grid-modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h4 style="font-size:14px; font-weight:800;">选择手机网格规格</h4>
+        <button class="modal-close-btn" id="gridModalCloseBtn">&times;</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="gridOptionList">
+        <button class="grid-option-btn" data-size="4x6">
+          <span>4 列 × 6 行 (24 格 · 宽松舒适)</span>
+        </button>
+        <button class="grid-option-btn active" data-size="5x8">
+          <span>5 列 × 8 行 (40 格 · 黄金推荐)</span>
+        </button>
+        <button class="grid-option-btn" data-size="5x10">
+          <span>5 列 × 10 行 (50 格 · 纵向长幅)</span>
+        </button>
+        <button class="grid-option-btn" data-size="6x10">
+          <span>6 列 × 10 行 (60 格 · 紧凑容量)</span>
+        </button>
+        <button class="grid-option-btn" data-size="6x14">
+          <span>6 列 × 14 行 (84 格 · 超大矩阵)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    /**
+     * Self-Storage 手机优先版 (Mobile First Edition)
+     * 特性：
+     * 1. 限定手机视口（max-width: 460px）
+     * 2. 5 列黄金触屏网格（大拇指触控热区）
+     * 3. 抽屉式 Bottom Sheet 弹窗
+     * 4. 白底便签贴纸 + 盒色字体
+     * 5. 触控微振动反馈支持
+     */
+    const STORAGE_KEY = 'self_storage_data_v1';
+    const THEME_KEY = 'self_storage_theme';
+    const GRID_SIZE_KEY = 'self_storage_grid_size_mobile';
+
+    const BRIGHT_PRESET_COLORS = [
+      { name: '晴空冰蓝', hex: '#00B4D8' },
+      { name: '荧光薄荷', hex: '#06D6A0' },
+      { name: '柠檬苏打', hex: '#FFD166' },
+      { name: '珊瑚果甜', hex: '#FF8C42' },
+      { name: '蜜桃气泡', hex: '#FF758F' },
+      { name: '霓虹甜莓', hex: '#F72585' },
+      { name: '紫藤葡萄', hex: '#9D4EDD' },
+      { name: '浅海钻蓝', hex: '#3A86FF' },
+      { name: '电光嫩绿', hex: '#70E000' },
+      { name: '极光青白', hex: '#48CAE4' },
+      { name: '丁香浅紫', hex: '#C77DFF' },
+      { name: '云白晶体', hex: '#E2E8F0' }
+    ];
+
+    let state = {
+      gridCols: 5, // 手机默认黄金 5 列
+      gridRows: 8, // 40 格
+      items: {},
+      activeCellIndex: null,
+      selectedColor: BRIGHT_PRESET_COLORS[0].hex,
+      currentColorFilter: 'all',
+      searchKeyword: '',
+      isEditMode: true
+    };
+
+    // DOM 元素引用
+    const storageGrid = document.getElementById('storageGrid');
+    const filledCountEl = document.getElementById('filledCount');
+    const totalCellsCountEl = document.getElementById('totalCellsCount');
+    const occupancyRateEl = document.getElementById('occupancyRate');
+    const occupancyBarEl = document.getElementById('occupancyBar');
+    const freeCountEl = document.getElementById('freeCount');
+    const searchInput = document.getElementById('searchInput');
+    const colorFilterPalette = document.getElementById('colorFilterPalette');
+    const gridBadge = document.getElementById('gridBadge');
+    const menuGridBadge = document.getElementById('menuGridBadge');
+
+    // 更多菜单
+    const moreMenuBtn = document.getElementById('moreMenuBtn');
+    const moreMenuDropdown = document.getElementById('moreMenuDropdown');
+    const menuGridSizeBtn = document.getElementById('menuGridSizeBtn');
+    const menuExportBtn = document.getElementById('menuExportBtn');
+    const menuImportBtn = document.getElementById('menuImportBtn');
+    const importFileInput = document.getElementById('importFileInput');
+    const menuResetBtn = document.getElementById('menuResetBtn');
+
+    // 规格弹窗
+    const gridModalOverlay = document.getElementById('gridModalOverlay');
+    const gridModalCloseBtn = document.getElementById('gridModalCloseBtn');
+    const gridOptionList = document.getElementById('gridOptionList');
+
+    // 抽屉弹窗元素
+    const storageModal = document.getElementById('storageModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalCellId = document.getElementById('modalCellId');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const saveCellBtn = document.getElementById('saveCellBtn');
+    const deleteCellBtn = document.getElementById('deleteCellBtn');
+    const editFromViewBtn = document.getElementById('editFromViewBtn');
+    const modalEditSection = document.getElementById('modalEditSection');
+    const modalViewSection = document.getElementById('modalViewSection');
+    const storageTextarea = document.getElementById('storageTextarea');
+    const explicitTagInput = document.getElementById('explicitTagInput');
+    const tagDetectPreview = document.getElementById('tagDetectPreview');
+    const viewTagHeader = document.getElementById('viewTagHeader');
+    const viewTagBadge = document.getElementById('viewTagBadge');
+    const viewContentBox = document.getElementById('viewContentBox');
+    const viewTimeInfo = document.getElementById('viewTimeInfo');
+    const viewCharCount = document.getElementById('viewCharCount');
+    const swatchList = document.getElementById('swatchList');
+    const customColorPicker = document.getElementById('customColorPicker');
+    const colorHexLabel = document.getElementById('colorHexLabel');
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const toastContainer = document.getElementById('toastContainer');
+
+    let isSyncingTag = false;
+
+    /* ========================================================
+     * 初始化
+     * ======================================================== */
+    function init() {
+      loadTheme();
+      loadSettings();
+      loadStorageData();
+      renderFilterPalette();
+      renderColorSwatches();
+      bindEvents();
+      renderGrid();
+      updateDashboardStats();
+    }
+
+    /* ========================================================
+     * 触感微振动 (Haptic Feedback)
+     * ======================================================== */
+    function triggerHaptic(duration = 12) {
+      if (window.navigator && window.navigator.vibrate) {
+        try {
+          window.navigator.vibrate(duration);
+        } catch (e) {}
+      }
+    }
+
+    /* ========================================================
+     * 超健壮标签提取算法 (支持全半角#、无空格紧贴、剔除末尾句号)
+     * ======================================================== */
+    function extractTagFromTextRobust(rawText) {
+      if (!rawText) return { text: '', tag: '' };
+      const str = rawText.trim();
+      const lastHashIdx = Math.max(str.lastIndexOf('#'), str.lastIndexOf('＃'));
+      if (lastHashIdx !== -1) {
+        let candidate = str.slice(lastHashIdx + 1).trim();
+        candidate = candidate.replace(/[。，！？；：、“”‘’!?,;:\s]+$/g, '');
+        if (candidate.length > 0) {
+          const tag = candidate.slice(0, 2);
+          return { text: str, tag: tag };
+        }
+      }
+      return { text: str, tag: '' };
+    }
+
+    /* ========================================================
+     * 数据与存储管理
+     * ======================================================== */
+    function loadStorageData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          state.items = JSON.parse(raw);
+          let hasRepaired = false;
+          Object.keys(state.items).forEach(k => {
+            const it = state.items[k];
+            if (it && it.text) {
+              const parsed = extractTagFromTextRobust(it.text);
+              if (parsed.tag && (!it.tag || it.tag !== parsed.tag)) {
+                it.tag = parsed.tag;
+                hasRepaired = true;
+              }
+            }
+          });
+          if (hasRepaired) {
+            saveStorageData();
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load storage data:', e);
+        state.items = {};
+      }
+    }
+
+    function saveStorageData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+      } catch (e) {
+        console.error('Failed to save storage data:', e);
+        showToast('保存失败，可能存储空间受限', 'error');
+      }
+    }
+
+    function loadSettings() {
+      // 手机优先：默认 5x8 黄金规格
+      const savedGrid = localStorage.getItem(GRID_SIZE_KEY) || '5x8';
+      const [c, r] = savedGrid.split('x').map(Number);
+      state.gridCols = c || 5;
+      state.gridRows = r || 8;
+      updateGridOptionActive(savedGrid);
+    }
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem(THEME_KEY, next);
+      themeIcon.textContent = next === 'dark' ? '☀️' : '🌙';
+      renderGrid();
+      showToast(`已切换至 ${next === 'dark' ? '深色夜间模式' : '浅色明亮模式'}`);
+    }
+
+    /* ========================================================
+     * 颜色计算与 3D 阴影辅助
+     * ======================================================== */
+    function getDarkerShade(hex, percent = 32) {
+      if (!hex || hex[0] !== '#') return 'rgba(0,0,0,0.25)';
+      let num = parseInt(hex.slice(1), 16);
+      if (hex.length === 4) {
+        num = parseInt(hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3], 16);
+      }
+      let r = (num >> 16) - Math.round(255 * (percent / 100));
+      let g = ((num >> 8) & 0x00FF) - Math.round(255 * (percent / 100));
+      let b = (num & 0x0000FF) - Math.round(255 * (percent / 100));
+      return `rgb(${Math.max(0, r)}, ${Math.max(0, g)}, ${Math.max(0, b)})`;
+    }
+
+    // 白色便签上的文字颜色：取盒子同款颜色；若属于极浅色，适度压深保障白纸上的对比度
+    function getStickerTextColor(hex) {
+      if (!hex || hex[0] !== '#') return '#1f2328';
+      let num = parseInt(hex.slice(1), 16);
+      if (hex.length === 4) {
+        num = parseInt(hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3], 16);
+      }
+      let r = (num >> 16);
+      let g = ((num >> 8) & 0x00FF);
+      let b = (num & 0x0000FF);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      if (brightness > 168) {
+        const factor = 0.62;
+        r = Math.floor(r * factor);
+        g = Math.floor(g * factor);
+        b = Math.floor(b * factor);
+      }
+      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    /* ========================================================
+     * 渲染调色盘
+     * ======================================================== */
+    function renderFilterPalette() {
+      BRIGHT_PRESET_COLORS.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'palette-btn';
+        btn.style.backgroundColor = item.hex;
+        btn.title = `筛选：${item.name}`;
+        btn.dataset.color = item.hex;
+        btn.addEventListener('click', () => {
+          setColorFilter(item.hex);
+        });
+        colorFilterPalette.appendChild(btn);
+      });
+    }
+
+    function renderColorSwatches() {
+      BRIGHT_PRESET_COLORS.forEach(item => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch-item';
+        swatch.style.backgroundColor = item.hex;
+        swatch.title = item.name;
+        swatch.dataset.color = item.hex;
+        swatch.addEventListener('click', () => {
+          selectColor(item.hex);
+        });
+        swatchList.insertBefore(swatch, customColorPicker);
+      });
+      selectColor(state.selectedColor);
+    }
+
+    function selectColor(hex) {
+      state.selectedColor = hex;
+      colorHexLabel.textContent = hex.toUpperCase();
+
+      document.querySelectorAll('.color-swatch-item').forEach(sw => {
+        if (sw.dataset.color && sw.dataset.color.toLowerCase() === hex.toLowerCase()) {
+          sw.classList.add('selected');
+        } else {
+          sw.classList.remove('selected');
+        }
+      });
+      customColorPicker.value = hex;
+      if (explicitTagInput) {
+        updateTagDetectUI(explicitTagInput.value);
+      }
+    }
+
+    function setColorFilter(colorHex) {
+      state.currentColorFilter = colorHex;
+      document.querySelectorAll('#colorFilterPalette .palette-btn, #colorFilterPalette .palette-all-btn').forEach(btn => {
+        if (btn.dataset.color === colorHex) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      applyFilters();
+    }
+
+    /* ========================================================
+     * 核心网格生成 (手机端专属尺寸)
+     * ======================================================== */
+    function renderGrid() {
+      const total = state.gridCols * state.gridRows;
+      const badgeText = `${state.gridCols} × ${state.gridRows} · ${total} 格`;
+      gridBadge.textContent = badgeText;
+      menuGridBadge.textContent = `${state.gridCols}×${state.gridRows}`;
+      
+      // 手机端自适应列数
+      storageGrid.style.gridTemplateColumns = `repeat(${state.gridCols}, minmax(0, 1fr))`;
+
+      storageGrid.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < total; i++) {
+        const cell = document.createElement('div');
+        const item = state.items[i];
+        const cellIdStr = formatCellId(i);
+
+        cell.dataset.index = i;
+
+        if (item) {
+          let effectiveTag = (item.tag || '').trim();
+          if (!effectiveTag && item.text) {
+            const parsed = extractTagFromTextRobust(item.text);
+            if (parsed.tag) {
+              effectiveTag = parsed.tag;
+              item.tag = effectiveTag;
+            }
+          }
+
+          const hasTag = Boolean(effectiveTag);
+          cell.className = 'cell filled ' + (hasTag ? 'has-tag' : 'pure-color');
+          
+          cell.style.backgroundColor = item.color;
+          const shadowColor = getDarkerShade(item.color, 32);
+          cell.style.setProperty('--cell-shadow-base', shadowColor);
+
+          let innerHtml = `
+            <span class="cell-filled-id">${cellIdStr}</span>
+          `;
+
+          if (hasTag) {
+            // 白色便签贴纸 + 盒子同色字体
+            const stickerColor = getStickerTextColor(item.color);
+            const isSingle = effectiveTag.length === 1;
+            innerHtml += `
+              <div class="cell-sticker-label ${isSingle ? 'single-char' : ''}" style="color: ${stickerColor};">
+                ${escapeHtml(effectiveTag)}
+              </div>
+            `;
+          }
+
+          // Tooltip (桌面端辅助)
+          const tagInfo = hasTag ? `[#${escapeHtml(effectiveTag)}] ` : '';
+          innerHtml += `
+            <div class="cell-tooltip">
+              <strong>#${cellIdStr}</strong> ${tagInfo}: ${escapeHtml(item.text ? item.text.slice(0, 40) : '')}
+            </div>
+          `;
+
+          cell.innerHTML = innerHtml;
+        } else {
+          cell.className = 'cell empty';
+          cell.innerHTML = `
+            <span class="cell-id-subtle">${cellIdStr}</span>
+            <span class="cell-plus">+</span>
+          `;
+        }
+
+        cell.addEventListener('click', () => onCellClick(i));
+        fragment.appendChild(cell);
+      }
+
+      storageGrid.appendChild(fragment);
+      applyFilters();
+    }
+
+    function formatCellId(index) {
+      const row = Math.floor(index / state.gridCols);
+      const col = index % state.gridCols;
+      const rowLetter = String.fromCharCode(65 + (row % 26));
+      const colNum = String(col + 1).padStart(2, '0');
+      return `${rowLetter}-${colNum}`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag));
+    }
+
+    /* ========================================================
+     * 过滤与检索
+     * ======================================================== */
+    function applyFilters() {
+      const kw = state.searchKeyword.trim().toLowerCase();
+      const colorFilter = state.currentColorFilter;
+      const cells = storageGrid.querySelectorAll('.cell');
+
+      cells.forEach(cell => {
+        const idx = parseInt(cell.dataset.index, 10);
+        const item = state.items[idx];
+
+        let matchesColor = true;
+        if (colorFilter !== 'all') {
+          if (!item) {
+            matchesColor = false;
+          } else {
+            matchesColor = (item.color.toLowerCase() === colorFilter.toLowerCase());
+          }
+        }
+
+        let matchesSearch = true;
+        if (kw) {
+          if (!item) {
+            matchesSearch = false;
+          } else {
+            const hasInText = item.text && item.text.toLowerCase().includes(kw);
+            const hasInTag = item.tag && item.tag.toLowerCase().includes(kw.replace(/^#|^＃/, ''));
+            matchesSearch = hasInText || hasInTag;
+          }
+        }
+
+        if (!matchesColor || (kw && !matchesSearch)) {
+          cell.classList.add('filtered-out');
+        } else {
+          cell.classList.remove('filtered-out');
+        }
+
+        if (kw && item && matchesSearch) {
+          cell.classList.add('search-matched');
+        } else {
+          cell.classList.remove('search-matched');
+        }
+      });
+    }
+
+    /* ========================================================
+     * 仪表盘统计更新
+     * ======================================================== */
+    function updateDashboardStats() {
+      const total = state.gridCols * state.gridRows;
+      const filled = Object.keys(state.items).filter(k => parseInt(k, 10) < total).length;
+      const free = Math.max(0, total - filled);
+      const rate = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+      filledCountEl.textContent = filled;
+      totalCellsCountEl.textContent = total;
+      freeCountEl.textContent = free;
+      occupancyRateEl.textContent = `${rate}%`;
+      occupancyBarEl.style.width = `${rate}%`;
+    }
+
+    /* ========================================================
+     * 弹窗交互：录入、查看、编辑、清空
+     * ======================================================== */
+    function onCellClick(index) {
+      triggerHaptic(14); // 触控反馈
+      state.activeCellIndex = index;
+      const item = state.items[index];
+      const cellIdStr = formatCellId(index);
+
+      modalCellId.textContent = `#${cellIdStr}`;
+
+      if (item) {
+        openViewModal(item);
+      } else {
+        openEditModal(null);
+      }
+    }
+
+    function openViewModal(item) {
+      state.isEditMode = false;
+      modalTitle.textContent = '查看储物格';
+
+      let effectiveTag = (item.tag || '').trim();
+      if (!effectiveTag && item.text) {
+        effectiveTag = extractTagFromTextRobust(item.text).tag;
+      }
+
+      if (effectiveTag) {
+        viewTagHeader.style.display = 'flex';
+        viewTagBadge.textContent = `#${effectiveTag}`;
+        const stickerColor = getStickerTextColor(item.color);
+        viewTagBadge.style.color = stickerColor;
+        viewTagBadge.style.backgroundColor = '#ffffff';
+      } else {
+        viewTagHeader.style.display = 'none';
+      }
+
+      viewContentBox.textContent = item.text;
+      const dateStr = item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('zh-CN', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '刚刚';
+      viewTimeInfo.textContent = `存入：${dateStr}`;
+      viewCharCount.textContent = `共 ${item.text.length} 字`;
+
+      modalEditSection.style.display = 'none';
+      modalViewSection.style.display = 'flex';
+
+      deleteCellBtn.style.display = 'inline-flex';
+      editFromViewBtn.style.display = 'inline-flex';
+      saveCellBtn.style.display = 'none';
+
+      storageModal.classList.add('active');
+    }
+
+    function openEditModal(existingItem) {
+      state.isEditMode = true;
+      modalTitle.textContent = existingItem ? '编辑储物格' : '存入储物格';
+      
+      const targetColor = existingItem ? existingItem.color : state.selectedColor;
+      selectColor(targetColor);
+
+      const currentText = existingItem ? existingItem.text : '';
+      storageTextarea.value = currentText;
+
+      let initialTag = existingItem ? (existingItem.tag || '') : '';
+      if (!initialTag && currentText) {
+        initialTag = extractTagFromTextRobust(currentText).tag;
+      }
+      
+      explicitTagInput.value = initialTag;
+      updateTagDetectUI(initialTag);
+
+      modalEditSection.style.display = 'flex';
+      modalViewSection.style.display = 'none';
+
+      deleteCellBtn.style.display = existingItem ? 'inline-flex' : 'none';
+      editFromViewBtn.style.display = 'none';
+      saveCellBtn.style.display = 'inline-flex';
+      saveCellBtn.textContent = existingItem ? '保存修改' : '封存入格';
+
+      storageModal.classList.add('active');
+      setTimeout(() => {
+        storageTextarea.focus();
+      }, 150);
+    }
+
+    function updateTagDetectUI(tagVal) {
+      const cleanTag = (tagVal || '').trim();
+      if (cleanTag) {
+        tagDetectPreview.className = 'tag-pill-preview';
+        const stickerColor = getStickerTextColor(state.selectedColor);
+        tagDetectPreview.style.color = stickerColor;
+        tagDetectPreview.textContent = `🏷️ 便签：【${cleanTag}】`;
+      } else {
+        tagDetectPreview.className = 'tag-pill-preview empty';
+        tagDetectPreview.style.color = '';
+        tagDetectPreview.textContent = '纯色方格 (无便签)';
+      }
+    }
+
+    function closeModal() {
+      storageModal.classList.remove('active');
+      state.activeCellIndex = null;
+    }
+
+    function saveCurrentCell() {
+      const idx = state.activeCellIndex;
+      if (idx === null) return;
+
+      const rawVal = storageTextarea.value.trim();
+      if (!rawVal) {
+        showToast('储藏文本不能为空哦', 'warning');
+        storageTextarea.focus();
+        return;
+      }
+
+      let finalTag = explicitTagInput.value.trim().slice(0, 2);
+      if (!finalTag) {
+        const parsed = extractTagFromTextRobust(rawVal);
+        finalTag = parsed.tag;
+      }
+
+      const now = new Date().toISOString();
+      const isNew = !state.items[idx];
+
+      state.items[idx] = {
+        text: rawVal,
+        tag: finalTag,
+        color: state.selectedColor,
+        createdAt: state.items[idx]?.createdAt || now,
+        updatedAt: now
+      };
+
+      triggerHaptic(20);
+      saveStorageData();
+      renderGrid();
+      updateDashboardStats();
+      closeModal();
+
+      const labelMsg = finalTag ? `（便签【${finalTag}】）` : `（纯色方格）`;
+      showToast(isNew ? `已存入 #${formatCellId(idx)} ${labelMsg}` : `已更新 #${formatCellId(idx)} ${labelMsg}`);
+    }
+
+    function deleteCurrentCell() {
+      const idx = state.activeCellIndex;
+      if (idx === null) return;
+
+      const cellIdStr = formatCellId(idx);
+      if (!confirm(`确定要清空格子 #${cellIdStr} 里的内容吗？`)) {
+        return;
+      }
+
+      triggerHaptic(25);
+      delete state.items[idx];
+      saveStorageData();
+      renderGrid();
+      updateDashboardStats();
+      closeModal();
+
+      showToast(`已清空格子 #${cellIdStr}`);
+    }
+
+    /* ========================================================
+     * 备份导出、导入与重置
+     * ======================================================== */
+    function exportBackup() {
+      const totalStored = Object.keys(state.items).length;
+      if (totalStored === 0) {
+        showToast('当前暂无可导出的储藏数据', 'warning');
+        return;
+      }
+
+      const backupObj = {
+        app: 'Self-Storage',
+        version: '1.3.0-mobile',
+        exportedAt: new Date().toISOString(),
+        gridSize: `${state.gridCols}x${state.gridRows}`,
+        items: state.items
+      };
+
+      const jsonStr = JSON.stringify(backupObj, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const timeStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `self-storage-mobile-${timeStr}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      showToast(`已成功导出 ${totalStored} 个储物格备份`);
+      closeMenu();
+    }
+
+    function triggerImport() {
+      closeMenu();
+      importFileInput.click();
+    }
+
+    function handleFileImport(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (!parsed.items || typeof parsed.items !== 'object') {
+            throw new Error('无效的备份文件结构');
+          }
+
+          if (confirm(`准备导入备份文件（含 ${Object.keys(parsed.items).length} 条记录），是否合并恢复？`)) {
+            state.items = { ...state.items, ...parsed.items };
+            if (parsed.gridSize) {
+              const [c, r] = parsed.gridSize.split('x').map(Number);
+              if (c && r) {
+                state.gridCols = c;
+                state.gridRows = r;
+                localStorage.setItem(GRID_SIZE_KEY, parsed.gridSize);
+                updateGridOptionActive(parsed.gridSize);
+              }
+            }
+            saveStorageData();
+            renderGrid();
+            updateDashboardStats();
+            showToast('备份数据恢复成功！');
+          }
+        } catch (err) {
+          console.error(err);
+          showToast('导入失败：文件解析错误', 'error');
+        } finally {
+          importFileInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAllStorage() {
+      closeMenu();
+      const count = Object.keys(state.items).length;
+      if (count === 0) {
+        showToast('储物格已经是全空状态', 'info');
+        return;
+      }
+      if (confirm(`警告：确定要清空全部 ${count} 个储藏格子吗？（建议先备份）`)) {
+        state.items = {};
+        saveStorageData();
+        renderGrid();
+        updateDashboardStats();
+        showToast('已清空全部储藏格子');
+      }
+    }
+
+    /* ========================================================
+     * 更多菜单 & 网格规格切换浮层
+     * ======================================================== */
+    function toggleMenu() {
+      moreMenuDropdown.classList.toggle('show');
+    }
+
+    function closeMenu() {
+      moreMenuDropdown.classList.remove('show');
+    }
+
+    function openGridModal() {
+      closeMenu();
+      gridModalOverlay.classList.add('show');
+    }
+
+    function closeGridModal() {
+      gridModalOverlay.classList.remove('show');
+    }
+
+    function updateGridOptionActive(sizeStr) {
+      document.querySelectorAll('#gridOptionList .grid-option-btn').forEach(btn => {
+        if (btn.dataset.size === sizeStr) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    function setGridSize(sizeStr) {
+      const [c, r] = sizeStr.split('x').map(Number);
+      state.gridCols = c;
+      state.gridRows = r;
+      localStorage.setItem(GRID_SIZE_KEY, sizeStr);
+      updateGridOptionActive(sizeStr);
+      closeGridModal();
+      renderGrid();
+      updateDashboardStats();
+      showToast(`已切换为 ${c} × ${r} 手机规格`);
+    }
+
+    /* ========================================================
+     * 事件监听与双向联动
+     * ======================================================== */
+    function bindEvents() {
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (storageModal.classList.contains('active')) closeModal();
+          if (gridModalOverlay.classList.contains('show')) closeGridModal();
+          closeMenu();
+        }
+      });
+
+      // 菜单控制
+      moreMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!moreMenuDropdown.contains(e.target) && e.target !== moreMenuBtn) {
+          closeMenu();
+        }
+      });
+
+      menuGridSizeBtn.addEventListener('click', openGridModal);
+      menuExportBtn.addEventListener('click', exportBackup);
+      menuImportBtn.addEventListener('click', triggerImport);
+      importFileInput.addEventListener('change', handleFileImport);
+      menuResetBtn.addEventListener('click', resetAllStorage);
+
+      gridModalCloseBtn.addEventListener('click', closeGridModal);
+      gridModalOverlay.addEventListener('click', (e) => {
+        if (e.target === gridModalOverlay) closeGridModal();
+      });
+
+      document.querySelectorAll('#gridOptionList .grid-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setGridSize(btn.dataset.size);
+        });
+      });
+
+      // 抽屉弹窗
+      modalCloseBtn.addEventListener('click', closeModal);
+      modalCancelBtn.addEventListener('click', closeModal);
+      saveCellBtn.addEventListener('click', saveCurrentCell);
+      deleteCellBtn.addEventListener('click', deleteCurrentCell);
+      editFromViewBtn.addEventListener('click', () => {
+        if (state.activeCellIndex !== null && state.items[state.activeCellIndex]) {
+          openEditModal(state.items[state.activeCellIndex]);
+        }
+      });
+
+      storageModal.addEventListener('click', (e) => {
+        if (e.target === storageModal) closeModal();
+      });
+
+      // 正文输入联动标签
+      storageTextarea.addEventListener('input', (e) => {
+        if (isSyncingTag) return;
+        const parsed = extractTagFromTextRobust(e.target.value);
+        explicitTagInput.value = parsed.tag;
+        updateTagDetectUI(parsed.tag);
+      });
+
+      // 独立标签输入框联动正文末尾
+      explicitTagInput.addEventListener('input', (e) => {
+        isSyncingTag = true;
+        let tagVal = e.target.value.trim();
+        if (tagVal.length > 2) {
+          tagVal = tagVal.slice(0, 2);
+          e.target.value = tagVal;
+        }
+        updateTagDetectUI(tagVal);
+
+        let text = storageTextarea.value;
+        const lastHashIdx = Math.max(text.lastIndexOf('#'), text.lastIndexOf('＃'));
+        if (tagVal) {
+          if (lastHashIdx !== -1) {
+            text = text.slice(0, lastHashIdx) + '#' + tagVal;
+          } else {
+            text = text.trimEnd() + (text.length > 0 ? ' #' : '#') + tagVal;
+          }
+        } else {
+          if (lastHashIdx !== -1) {
+            text = text.slice(0, lastHashIdx).trimEnd();
+          }
+        }
+        storageTextarea.value = text;
+        isSyncingTag = false;
+      });
+
+      customColorPicker.addEventListener('input', (e) => {
+        selectColor(e.target.value);
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        state.searchKeyword = e.target.value;
+        applyFilters();
+      });
+
+      document.querySelector('#colorFilterPalette .palette-all-btn').addEventListener('click', () => {
+        setColorFilter('all');
+      });
+
+      themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    /* ========================================================
+     * Toast 轻提示
+     * ======================================================== */
+    function showToast(msg, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      if (type === 'error') {
+        toast.style.background = '#e63946';
+      } else if (type === 'warning') {
+        toast.style.background = '#f59e0b';
+      }
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toastContainer.removeChild(toast);
+          }
+        }, 200);
+      }, 2400);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

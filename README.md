@@ -15,6 +15,7 @@
 | **🐾 猫咪抓鱼** | [`catch-fish/`](./catch-fish/) | 互动游戏 | [在线体验](https://selfr7.github.io/mini-apps/catch-fish/) | [selfr.work/tools/catch-fish/](https://selfr.work/tools/catch-fish/) |
 | **🔮 今日塔罗** | [`tarot/`](./tarot/) | 灵感生活 | [在线体验](https://selfr7.github.io/mini-apps/tarot/) | [selfr.work/tools/tarot/](https://selfr.work/tools/tarot/) |
 | **🎨 3:4 竖屏图文排版** | [`cover-styler/`](./cover-styler/) | 效率工具 | [在线体验](https://selfr7.github.io/mini-apps/cover-styler/) | [selfr.work/tools/cover-styler/](https://selfr.work/tools/cover-styler/) |
+| **📦 随心储物格** | [`self-storage/`](./self-storage/) | 效率生活 | [在线体验](https://selfr7.github.io/mini-apps/self-storage/) | [selfr.work/tools/self-storage/](https://selfr.work/tools/self-storage/) |
 
 ---
 
@@ -39,6 +40,13 @@
 - **灵活样式标记**：支持通过 `*重点词*` 等语法快速高亮关键字，支持主副标题字号、字距、描边与阴影微调。
 - **多图批量处理**：支持一次性拖入多张背景图片批量排版预览并打包导出。
 - **模板导入导出**：支持将排版参数保存为 JSON 模板文件，方便复用。
+
+### 4. 📦 随心储物格 (`/self-storage/`)
+- **手机触屏优先**：限定手机视口（460px 宽度）、5 列触控大热区与底部上滑抽屉式弹窗（Bottom Sheet）。
+- **3D 立体按键质感**：物理微凹槽位空白底座 + 凸起立体实体按键，带通透高光、厚度侧影与真实按压沉落反馈。
+- **便签贴纸美学**：盒子上贴白色哑光分类便签贴纸，便签字色自动跟随盒子色彩；未贴便签则呈现纯粹纯色宝石块。
+- **末尾 #标签 双向联动**：支持在文本末尾输入 `#标签`（限 2 字）或在输入框直接编辑，双向同步。
+- **离线安全持久化**：基于 `localStorage` 自动保存，支持 JSON 备份导出导入与多规格矩阵切换。
 
 ---
 
