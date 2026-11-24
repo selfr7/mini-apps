@@ -22,7 +22,8 @@
     noteTarget: null,  // 记录感受时的牌下标
     pool: [],          // 牌堆剩余可抽的 deck 下标（洗乱）
     libraryCardIndex: null, // 图鉴查看时的具体 DECK 下标
-    libraryReversed: false  // 图鉴查看时的正逆位状态
+    libraryReversed: false, // 图鉴查看时的正逆位状态
+    meaningArtworkVisible: false // 牌意页是否展开牌面，进入阅读时默认收起
   };
 
   var DECK = window.TAROT_DECK;      // 78 张牌数据（22 张大阿卡纳 + 56 张小阿卡纳）
@@ -35,7 +36,31 @@
     var views = document.querySelectorAll('.view');
     for (var i = 0; i < views.length; i++) views[i].classList.remove('active');
     $('view-' + name).classList.add('active');
+    document.body.classList.toggle('reading-meaning', name === 'meaning');
     window.scrollTo(0, 0);
+  }
+
+  function applyMeaningArtwork() {
+    var shown = !!state.meaningArtworkVisible;
+    var view = $('view-meaning');
+    if (view) view.classList.toggle('artwork-visible', shown);
+    var body = $('meaningBody');
+    if (body) body.classList.remove('meaning-collapsed');
+    var btn = $('btnToggleArtwork');
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', shown ? 'true' : 'false');
+    btn.textContent = shown ? '隐藏牌面' : '显示牌面';
+    btn.setAttribute('aria-label', shown ? '隐藏牌面图片' : '显示牌面图片');
+  }
+
+  function settleMeaningArtwork() {
+    if (!state.meaningArtworkVisible) return;
+    var view = $('view-meaning');
+    if (!view || !view.classList.contains('active')) return;
+    var body = $('meaningBody');
+    if (!body) return;
+    var h = body.clientHeight;
+    if (h > 0 && h < 72) body.classList.add('meaning-collapsed');
   }
 
   var toastTimer = null;
@@ -439,12 +464,13 @@
   }
 
   function orientationAt(pos) {
+    var card = cardAt(pos);
+    // 牌意页可临时改朝向。显式 _rev 优先，这样未开启逆位时也能切换查看。
+    if (card && (card._rev === 'reversed' || card._rev === 'upright')) return card._rev;
     if (!state.reversedOn) return 'upright';
     // 每张牌独立 30% 逆位概率
-    if (cardAt(pos)._rev === undefined) {
-      cardAt(pos)._rev = Math.random() < 0.3 ? 'reversed' : 'upright';
-    }
-    return cardAt(pos)._rev;
+    card._rev = Math.random() < 0.3 ? 'reversed' : 'upright';
+    return card._rev;
   }
 
   function labelAt(pos) {
@@ -518,6 +544,10 @@
   }
 
   function showMeaningView() {
+    // 从抽牌或图鉴新进入时收起牌面；页内翻页、正逆位切换保留当前展开状态
+    var alreadyReading = $('view-meaning').classList.contains('active');
+    if (!alreadyReading) state.meaningArtworkVisible = false;
+
     var isLib = state.libraryCardIndex !== null;
     var pos = state.current;
     var card = isLib ? DECK[state.libraryCardIndex] : cardAt(pos);
@@ -585,6 +615,7 @@
       '</div>';
     }
     $('meaningBody').innerHTML = html;
+    applyMeaningArtwork();
 
     if (isLib) {
       $('meaningPager').style.display = 'none';
@@ -601,6 +632,7 @@
       updateMeaningPager(pos);
     }
     showView('meaning');
+    settleMeaningArtwork();
   }
 
   // 牌意页 1/N 翻页（仅在已翻开的牌之间切换）
@@ -980,6 +1012,14 @@
         showView('draw');
       }
     });
+    var artBtn = $('btnToggleArtwork');
+    if (artBtn) {
+      artBtn.addEventListener('click', function () {
+        state.meaningArtworkVisible = !state.meaningArtworkVisible;
+        applyMeaningArtwork();
+        settleMeaningArtwork();
+      });
+    }
     var mOriBtn = $('meaningOrientation');
     if (mOriBtn) {
       mOriBtn.addEventListener('click', function () {

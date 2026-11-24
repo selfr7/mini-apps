@@ -651,8 +651,27 @@
     .stage-actions { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 10px; padding-bottom: 6px; }
 
     /* ---- 牌意 ---- */
-    /* 顶部（牌名/副标题/翻页器）与底部按钮固定，仅牌意内容区滚动 */
+    /* 顶部（牌名/副标题/翻页器）与底部按钮固定，仅牌意内容区滚动。
+       阅读时默认收起牌面，把纵向空间留给牌意正文。 */
+    body.reading-meaning {
+      overflow: hidden;
+      height: 100%;
+      max-height: 100dvh;
+    }
+    body.reading-meaning .page {
+      height: 100%;
+      max-height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
     #view-meaning { overflow: hidden; min-height: 0; }
+    #view-meaning .orn,
+    #view-meaning .page-title,
+    #view-meaning .page-sub,
+    #view-meaning .meaning-toolbar,
+    #view-meaning .pager,
+    #view-meaning .stage-actions { flex-shrink: 0; }
+    #view-meaning .page-sub { margin-bottom: 12px; }
     #view-meaning .meaning-body {
       flex: 1 1 0;
       min-height: 0;
@@ -660,6 +679,7 @@
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
     }
+    #view-meaning:not(.artwork-visible) .meaning-body { margin-top: 8px; }
     .pager {
       display: flex; align-items: center; justify-content: center;
       gap: 14px; margin: -8px 0 12px;
@@ -722,9 +742,66 @@
       font-size: 13px; color: #e8dfc8; line-height: 1.8;
     }
 
-    /* 牌意解读页：顶部高清大牌面展示 */
+    /* 牌名下方：正逆位切换 + 显示/隐藏牌面。牌面默认隐藏。 */
+    .meaning-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 4px;
+    }
+    .meaning-artwork-toggle {
+      background: transparent;
+      color: #d9b96c;
+      border: 1px solid rgba(217, 185, 108, 0.5);
+      border-radius: 16px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.2;
+    }
+    .meaning-artwork-toggle:hover {
+      background: rgba(217,185,108,0.12);
+      border-color: #d9b96c;
+    }
+    .meaning-artwork-toggle:active { transform: scale(0.96); }
+    .meaning-artwork-toggle[aria-pressed="true"] {
+      background: rgba(217,185,108,0.18);
+      color: #f7edd4;
+    }
+
+    /* 牌意解读页：牌面可展开，默认不占纵向空间 */
     .meaning-card-wrap {
-      display: flex; justify-content: center; margin: 12px 0 16px;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 0 12px;
+    }
+    /* 空间够时保持 248×146 牌面；短屏按比例缩小，底部按钮留在视口内 */
+    #view-meaning.artwork-visible .meaning-card-wrap {
+      display: flex;
+      flex: 1 1 248px;
+      min-height: 0;
+      max-height: 248px;
+      margin: 4px 0;
+      overflow: hidden;
+    }
+    #view-meaning.artwork-visible .meaning-body {
+      margin-top: 4px;
+      padding: 10px 14px;
+    }
+    /* 展开牌面后若阅读框高不到一行，收起残条，避免裁切半行文字 */
+    #view-meaning.artwork-visible #meaningBody.meaning-collapsed {
+      flex: 0 0 0;
+      height: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
     }
     .meaning-card {
       position: relative;
@@ -734,6 +811,13 @@
       box-shadow: 0 10px 28px rgba(0,0,0,0.5);
       background: #111224;
       overflow: hidden;
+    }
+    #view-meaning.artwork-visible .meaning-card {
+      width: auto;
+      height: 100%;
+      max-width: 146px;
+      max-height: 248px;
+      aspect-ratio: 146 / 248;
     }
     .meaning-card img {
       width: 100%; height: 100%;
@@ -745,20 +829,21 @@
       transform: rotate(180deg);
     }
     .meaning-orientation-tag {
-      position: absolute; bottom: 8px; right: 8px;
-      font-size: 11px; font-weight: 600;
-      padding: 3px 8px; border-radius: 6px;
-      background: rgba(13, 14, 28, 0.88);
+      position: static;
+      font-size: 12px; font-weight: 600;
+      padding: 6px 12px; border-radius: 16px;
+      background: #1b1c38;
       border: 1px solid rgba(217,185,108,0.5);
       color: #e5c365;
       cursor: pointer;
+      font-family: inherit;
+      line-height: 1.2;
       display: inline-flex; align-items: center; gap: 4px;
-      transition: all 0.2s;
+      transition: background 0.2s, border-color 0.2s;
     }
     .meaning-orientation-tag:hover {
       background: rgba(30, 32, 60, 0.95);
       border-color: #d9b96c;
-      transform: scale(1.05);
     }
 
     /* ---- 牌意图鉴 ---- */
@@ -1137,10 +1222,13 @@
       <div class="orn">✦</div>
       <div class="page-title" id="meaningTitle">牌意解读</div>
       <div class="page-sub" id="meaningSub"></div>
-      <div class="meaning-card-wrap">
+      <div class="meaning-toolbar">
+        <button type="button" class="meaning-orientation-tag" id="meaningOrientation" title="点击切换正位/逆位">正位</button>
+        <button type="button" class="meaning-artwork-toggle" id="btnToggleArtwork" aria-pressed="false" aria-label="显示牌面图片">显示牌面</button>
+      </div>
+      <div class="meaning-card-wrap" id="meaningCardWrap">
         <div class="meaning-card" id="meaningCard">
           <img id="meaningImg" src="" alt="牌面" />
-          <button class="meaning-orientation-tag" id="meaningOrientation" title="点击切换正位/逆位">正位</button>
         </div>
       </div>
       <div class="pager" id="meaningPager" style="display:none;">
